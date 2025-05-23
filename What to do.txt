@@ -1,0 +1,42 @@
+MainActivity:
+Nothing needs to be done.
+
+Register:
+Link to database so when user enters their details it is saved and they can proceed to the Login.
+
+Login:
+Retrieve the Username and Password from the database to proceed. Make it so that if Username or password is wrong a popup message appears with "username or password is wrong"
+
+HomepageActivity:
+I added Expenses and Income and added the values underneath with both being R 0.00. The user will need to click the add button (+) which takes them to the acitivity_transactions.xml. I added some animation with the link for it. If you don't want it then just delete it.
+
+Transactions:
+I added radio buttons so the user selects one, adds the amount, a note (Optional), then selects category where they can choose from the different options. Create a method where depending on there choice between Income or Expense, then when they click select category they see either Expense options or income options. I added a date, start and end times.
+
+Category:
+I made it one page for both so when the user selects either income or expense they will be redirected to the Category. So depending on their choice they will see that options categories. If you check drawable these images belong to the categories: 
+Income: 
+ic_gift
+ic_loan
+ic_salary
+
+Expense:
+ic_groceries
+ic_takeout
+ic_transportation
+ic_ultilities
+ic_healthcare
+ic_housing
+
+UploadPhoto:
+btnSelectPhoto = Access to user photos.
+btnConfirmPhoto = Redirects back to the transaction page.
+
+
+Analytics: Coming soon. So don't bother here.
+
+Timeline: 
+When the user selects a date they see the data from that day. 
+For example: 17/04/2025 
+Income = R30,000.00
+Expenses = R25,000.00
