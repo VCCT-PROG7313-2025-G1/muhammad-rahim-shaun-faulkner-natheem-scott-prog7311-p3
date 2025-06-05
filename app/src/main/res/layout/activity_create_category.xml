@@ -1,161 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/main"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#1C1B29"
-    android:orientation="vertical"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/gradient_background"
     tools:context=".CreateCategory">
 
-    <!-- Main content (weights to push nav bar down) -->
+    <!-- Main Content Area -->
     <LinearLayout
+        android:id="@+id/main"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <!-- Title -->
-        <TextView
-            android:id="@+id/txtTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Create a New Category"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="40dp"
-            android:layout_marginBottom="20dp" />
+        <!-- Main content -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp">
 
-        <!-- Radio Group -->
-        <RadioGroup
-            android:id="@+id/radioGroup"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="20dp">
-
-            <RadioButton
-                android:id="@+id/radioIncome"
+            <!-- Title -->
+            <TextView
+                android:id="@+id/txtTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Income"
+                android:text="Create a New Category"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="40dp"
+                android:layout_marginBottom="20dp" />
+
+            <!-- Radio Group -->
+            <RadioGroup
+                android:id="@+id/radioGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="20dp">
+
+                <RadioButton
+                    android:id="@+id/radioIncome"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Income"
+                    android:textColor="#FFFFFF" />
+
+                <RadioButton
+                    android:id="@+id/radioExpense"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Expense"
+                    android:textColor="#FFFFFF"
+                    android:layout_marginStart="24dp" />
+            </RadioGroup>
+
+            <!-- Category Name Input -->
+            <EditText
+                android:id="@+id/editCategoryName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter category name"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#AAAAAA"
+                android:padding="12dp"
+                android:layout_marginBottom="24dp" />
+
+            <!-- Edit Categories Button -->
+            <Button
+                android:id="@+id/btnEditCategories"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Edit Categories"
+                android:backgroundTint="#6A5ACD"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/button_rounded_dark"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Submit Button -->
+            <Button
+                android:id="@+id/btnCreateCategory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Create Category"
+                android:backgroundTint="#6A5ACD"
                 android:textColor="#FFFFFF" />
-
-            <RadioButton
-                android:id="@+id/radioExpense"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Expense"
-                android:textColor="#FFFFFF"
-                android:layout_marginStart="24dp" />
-        </RadioGroup>
-
-        <!-- Category Name Input -->
-        <EditText
-            android:id="@+id/editCategoryName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Enter category name"
-            android:textColor="#FFFFFF"
-            android:textColorHint="#AAAAAA"
-            android:padding="12dp"
-            android:layout_marginBottom="24dp" />
-
-        <!-- Edit Categories Button -->
-        <Button
-            android:id="@+id/btnEditCategories"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Edit Categories"
-            android:backgroundTint="#6A5ACD"
-            android:textColor="#FFFFFF"
-            android:background="@drawable/button_rounded_dark" />
-
-        <!-- Submit Button -->
-        <Button
-            android:id="@+id/btnCreateCategory"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Create Category"
-            android:backgroundTint="#6A5ACD"
-            android:textColor="#FFFFFF" />
+        </LinearLayout>
     </LinearLayout>
 
-    <!-- Navigation Bar -->
-    <LinearLayout
-        android:id="@+id/navigationBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+    <!-- Navigation Drawer -->
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/navigation_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
         android:background="#3D2A63"
-        android:orientation="horizontal"
-        android:padding="8dp">
+        android:fitsSystemWindows="true"
+        app:headerLayout="@layout/nav_header"
+        app:menu="@menu/nav_menu" />
 
-        <LinearLayout
-            android:id="@+id/navHome"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_home" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Home"
-                android:textColor="#FFFFFF"
-                android:textSize="12sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/navTimeline"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_timeline" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Timeline"
-                android:textColor="#FFFFFF"
-                android:textSize="12sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/navSettings"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_settings" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Settings"
-                android:textColor="#FFFFFF"
-                android:textSize="12sp" />
-        </LinearLayout>
-    </LinearLayout>
-
-</LinearLayout>
+</androidx.drawerlayout.widget.DrawerLayout>

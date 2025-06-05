@@ -1,144 +1,159 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0D0B1F"
-    android:padding="16dp">
+    android:background="@drawable/gradient_background">
 
-    <LinearLayout
+    <!-- Background Circles Image -->
+    <ImageView
+        android:id="@+id/bgCircles"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_circles"
+        android:scaleType="centerCrop"
+        android:contentDescription="@null" />
 
-        <!-- Recurrence Type -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Recurrence Type"
-            android:textColor="#FFFFFF"
-            android:textSize="18sp"
-            android:layout_marginBottom="8dp" />
+    <!-- Foreground Scrollable Content -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
 
-        <RadioGroup
-            android:id="@+id/recurrenceGroup"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="16dp">
+            android:orientation="vertical">
 
-            <RadioButton
-                android:id="@+id/rbDaily"
+            <!-- Recurrence Type -->
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Daily"
-                android:textColor="#FFFFFF" />
-
-            <RadioButton
-                android:id="@+id/rbWeekly"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Weekly"
+                android:text="Recurrence Type"
                 android:textColor="#FFFFFF"
-                android:layout_marginStart="16dp" />
+                android:textSize="18sp"
+                android:layout_marginBottom="8dp" />
 
-            <RadioButton
-                android:id="@+id/rbMonthly"
+            <RadioGroup
+                android:id="@+id/recurrenceGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <RadioButton
+                    android:id="@+id/rbDaily"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Daily"
+                    android:textColor="#FFFFFF" />
+
+                <RadioButton
+                    android:id="@+id/rbWeekly"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Weekly"
+                    android:textColor="#FFFFFF"
+                    android:layout_marginStart="16dp" />
+
+                <RadioButton
+                    android:id="@+id/rbMonthly"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Monthly"
+                    android:textColor="#FFFFFF"
+                    android:layout_marginStart="16dp" />
+
+                <RadioButton
+                    android:id="@+id/rbYearly"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Yearly"
+                    android:textColor="#FFFFFF"
+                    android:layout_marginStart="16dp" />
+            </RadioGroup>
+
+            <!-- Start Date -->
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Monthly"
+                android:text="Start Date"
                 android:textColor="#FFFFFF"
-                android:layout_marginStart="16dp" />
+                android:textSize="16sp" />
+            <EditText
+                android:id="@+id/editStartDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Select start date"
+                android:inputType="none"
+                android:focusable="false"
+                android:backgroundTint="#7B5CE1"
+                android:textColor="#FFFFFF"
+                android:layout_marginBottom="16dp" />
 
-            <RadioButton
-                android:id="@+id/rbYearly"
+            <!-- Start Time -->
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Yearly"
+                android:text="Start Time"
                 android:textColor="#FFFFFF"
-                android:layout_marginStart="16dp" />
-        </RadioGroup>
+                android:textSize="16sp" />
+            <EditText
+                android:id="@+id/editStartTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Select start time"
+                android:inputType="none"
+                android:focusable="false"
+                android:backgroundTint="#7B5CE1"
+                android:textColor="#FFFFFF"
+                android:layout_marginBottom="16dp" />
 
-        <!-- Start Date -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Start Date"
-            android:textColor="#FFFFFF"
-            android:textSize="16sp" />
-        <EditText
-            android:id="@+id/editStartDate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Select start date"
-            android:inputType="none"
-            android:focusable="false"
-            android:backgroundTint="#7B5CE1"
-            android:textColor="#FFFFFF"
-            android:layout_marginBottom="16dp" />
+            <!-- End Date -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="End Date"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp" />
+            <EditText
+                android:id="@+id/editEndDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Select end date"
+                android:inputType="none"
+                android:focusable="false"
+                android:backgroundTint="#7B5CE1"
+                android:textColor="#FFFFFF"
+                android:layout_marginBottom="16dp" />
 
-        <!-- Start Time -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Start Time"
-            android:textColor="#FFFFFF"
-            android:textSize="16sp" />
-        <EditText
-            android:id="@+id/editStartTime"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Select start time"
-            android:inputType="none"
-            android:focusable="false"
-            android:backgroundTint="#7B5CE1"
-            android:textColor="#FFFFFF"
-            android:layout_marginBottom="16dp" />
+            <!-- End Time -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="End Time"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp" />
+            <EditText
+                android:id="@+id/editEndTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Select end time"
+                android:inputType="none"
+                android:focusable="false"
+                android:backgroundTint="#7B5CE1"
+                android:textColor="#FFFFFF"
+                android:layout_marginBottom="24dp" />
 
-        <!-- End Date -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="End Date"
-            android:textColor="#FFFFFF"
-            android:textSize="16sp" />
-        <EditText
-            android:id="@+id/editEndDate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Select end date"
-            android:inputType="none"
-            android:focusable="false"
-            android:backgroundTint="#7B5CE1"
-            android:textColor="#FFFFFF"
-            android:layout_marginBottom="16dp" />
+            <!-- Submit Button -->
+            <Button
+                android:id="@+id/btnSubmitRecurring"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Submit"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#7B5CE1"
+                android:background="@drawable/rounded_button" />
 
-        <!-- End Time -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="End Time"
-            android:textColor="#FFFFFF"
-            android:textSize="16sp" />
-        <EditText
-            android:id="@+id/editEndTime"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Select end time"
-            android:inputType="none"
-            android:focusable="false"
-            android:backgroundTint="#7B5CE1"
-            android:textColor="#FFFFFF"
-            android:layout_marginBottom="24dp" />
-
-        <!-- Submit Button -->
-        <Button
-            android:id="@+id/btnSubmitRecurring"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Submit"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#7B5CE1"
-            android:background="@drawable/rounded_button" />
-
-    </LinearLayout>
-</ScrollView>
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>

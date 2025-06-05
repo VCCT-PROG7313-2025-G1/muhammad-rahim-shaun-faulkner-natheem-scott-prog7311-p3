@@ -9,5 +9,6 @@
     <color name="purple_500">#BB86FC</color>
     <color name="purple_700">#3700B3</color>
     <color name="purple_200">#CF9FFF</color>
+    <color name="underline">#BDB8B8</color>
 
 </resources>

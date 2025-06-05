@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/ic_home"
+        android:title="Home"/>
+
+    <item
+        android:id="@+id/nav_timeline"
+        android:icon="@drawable/ic_timeline"
+        android:title="Timeline"/>
+
+    <item
+        android:id="@+id/nav_analytics"
+        android:icon="@drawable/ic_analytics"
+        android:title="Analytics"/>
+
+    <item android:title="Profile">
+
+        <menu>
+
+            <item
+                android:id="@+id/nav_lightDark"
+                android:icon="@drawable/ic_lightDark"
+                android:title="Light/Dark"/>
+
+            <item
+                android:id="@+id/nav_CreateCategory"
+                android:icon="@drawable/ic_Createcategory"
+                android:title="Create Category"/>
+
+            <item
+                android:id="@+id/nav_account"
+                android:icon="@drawable/ic_account"
+                android:title="Account"/>
+
+            <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/ic_login"
+            android:title="Logout"/>
+
+        </menu>
+
+    </item>
+
+    <item android:title="Settings">
+
+        <menu>
+
+            <item
+                android:id="nav_settings"
+                android:icon="@drawable/ic_settings"
+                android:title="Settings"/>
+
+        </menu>
+
+    </item>
+
+</menu>

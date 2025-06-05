@@ -1,78 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/registerRoot"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#1C1B29"
-    android:orientation="vertical"
-    android:padding="24dp"
-    android:gravity="center_horizontal"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/gradient_background"
     tools:context=".Register">
 
-    <!-- Logo/Image -->
+    <!-- Background Image -->
     <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="300dp"
-        android:layout_height="200dp"
-        android:layout_marginBottom="24dp"
-        android:src="@drawable/piggyplan_removebg_preview" />
+        android:id="@+id/bgCircles"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_circles"
+        android:scaleType="centerCrop" />
 
-    <!-- Full Name -->
-    <EditText
-        android:id="@+id/txtFullName"
+    <!-- Main Content -->
+    <LinearLayout
+        android:id="@+id/registerRoot"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginBottom="16dp"
-        android:hint="Full Name"
-        android:inputType="text"
-        android:backgroundTint="#4B3F72"
-        android:textColor="#FFFFFF"
-        android:textColorHint="#D3D3D3" />
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:gravity="center_horizontal">
 
-    <!-- Username -->
-    <EditText
-        android:id="@+id/txtUsername"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginBottom="16dp"
-        android:hint="Username"
-        android:inputType="text"
-        android:backgroundTint="#4B3F72"
-        android:textColor="#FFFFFF"
-        android:textColorHint="#D3D3D3" />
+        <!-- Logo/Image -->
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="300dp"
+            android:layout_height="200dp"
+            android:layout_marginBottom="24dp"
+            android:src="@drawable/piggyplan_removebg_preview" />
 
-    <!-- Password -->
-    <EditText
-        android:id="@+id/txtregPassword"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginBottom="16dp"
-        android:hint="Password"
-        android:inputType="textPassword"
-        android:backgroundTint="#4B3F72"
-        android:textColor="#FFFFFF"
-        android:textColorHint="#D3D3D3" />
+        <!-- Full Name -->
+        <EditText
+            android:id="@+id/txtFullName"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginBottom="16dp"
+            android:hint="Full Name"
+            android:inputType="text"
+            android:backgroundTint="#4B3F72"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#D3D3D3" />
 
-    <!-- Confirm Password -->
-    <EditText
-        android:id="@+id/txtConfirm"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginBottom="24dp"
-        android:hint="Confirm"
-        android:inputType="textPassword"
-        android:backgroundTint="#4B3F72"
-        android:textColor="#FFFFFF"
-        android:textColorHint="#D3D3D3" />
+        <!-- Username -->
+        <EditText
+            android:id="@+id/txtUsername"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginBottom="16dp"
+            android:hint="Username"
+            android:inputType="text"
+            android:backgroundTint="#4B3F72"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#D3D3D3" />
 
-    <!-- Create Account Button -->
-    <Button
-        android:id="@+id/btnCreate"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:text="Create Account"
-        android:textColor="#FFFFFF"
-        android:backgroundTint="#6A5ACD" />
+        <!-- Password -->
+        <EditText
+            android:id="@+id/txtregPassword"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginBottom="16dp"
+            android:hint="Password"
+            android:inputType="textPassword"
+            android:backgroundTint="#4B3F72"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#D3D3D3" />
 
-</LinearLayout>
+        <!-- Confirm Password -->
+        <EditText
+            android:id="@+id/txtConfirm"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginBottom="24dp"
+            android:hint="Confirm"
+            android:inputType="textPassword"
+            android:backgroundTint="#4B3F72"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#D3D3D3" />
+
+        <!-- Create Account Button -->
+        <Button
+            android:id="@+id/btnCreate"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="Create Account"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#6A5ACD" />
+    </LinearLayout>
+
+</FrameLayout>

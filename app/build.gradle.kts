@@ -41,6 +41,7 @@ android {
             it.jvmArgs("--add-opens", "java.base/java.lang=ALL-UNNAMED")
         }
     }
+
 }
 
 dependencies {
@@ -59,10 +60,12 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     kapt(libs.room.compiler)
-    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.0")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.7")
+    implementation("de.hdodenhof:circleimageview:3.1.0")
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     testImplementation("junit:junit:4.13.2")
-    testImplementation("org.mockito:mockito-core:4.8.0")
+    testImplementation("org.mockito:mockito-core:5.3.1")
     testImplementation("androidx.arch.core:core-testing:2.2.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.1.0")
