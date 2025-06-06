@@ -129,15 +129,15 @@
                                         app:layout_constraintEnd_toEndOf="parent"
                                         app:layout_constraintStart_toStartOf="parent"
                                         app:layout_constraintTop_toTopOf="parent"
-                                        app:srcCompat="@drawable/ic_profpic" />
+                                        app:srcCompat="@drawable/ic_home" />
                                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                                 <TextView
-                                    android:id="@+id/txt_payment"
+                                    android:id="@+id/lbl_Home"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_margin="8dp"
-                                    android:text="Create Profile"
+                                    android:text="Home"
                                     android:textAlignment="center"
                                     android:textColor="#000000"
                                     android:textSize="13sp"
@@ -181,44 +181,6 @@
                                     android:textSize="13sp"
                                     android:textStyle="bold" />
                             </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_margin="10dp"
-                                android:layout_weight="0.3333"
-                                android:background="@drawable/grey_background"
-                                android:elevation="5dp"
-                                android:orientation="vertical">
-
-                                <androidx.constraintlayout.widget.ConstraintLayout
-                                    android:layout_width="60dp"
-                                    android:layout_height="60dp"
-                                    android:layout_gravity="center_horizontal"
-                                    android:layout_margin="12dp">
-
-                                    <ImageView
-                                        android:id="@+id/img_notification"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        app:layout_constraintBottom_toBottomOf="parent"
-                                        app:layout_constraintEnd_toEndOf="parent"
-                                        app:layout_constraintStart_toStartOf="parent"
-                                        app:layout_constraintTop_toTopOf="parent"
-                                        app:srcCompat="@drawable/ic_home" />
-                                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                                <TextView
-                                    android:id="@+id/txt_notifications"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_margin="8dp"
-                                    android:text="Home"
-                                    android:textAlignment="center"
-                                    android:textColor="#000000"
-                                    android:textSize="13sp"
-                                    android:textStyle="bold" />
-                            </LinearLayout>
                         </LinearLayout>
 
                         <LinearLayout
@@ -235,12 +197,12 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="First Name"
+                                android:text="Name"
                                 android:textColor="#182693"
                                 android:textSize="18sp" />
 
                             <TextView
-                                android:id="@+id/txt_change"
+                                android:id="@+id/txt_Fname"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
@@ -278,7 +240,7 @@
                                 android:textSize="18sp" />
 
                             <TextView
-                                android:id="@+id/txt_number"
+                                android:id="@+id/txt_Email"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
@@ -316,7 +278,7 @@
                                 android:textSize="18sp" />
 
                             <TextView
-                                android:id="@+id/txt_number1"
+                                android:id="@+id/txt_Profpassword"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
@@ -354,7 +316,7 @@
                                 android:textSize="18sp" />
 
                             <TextView
-                                android:id="@+id/txt_hello"
+                                android:id="@+id/txt_ProfConfirm"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
@@ -409,7 +371,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <Button
-                android:id="@+id/button"
+                android:id="@+id/btnConfrimProf"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="24dp"
