@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -12,18 +14,32 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Prog7313"
         tools:targetApi="31">
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
         <activity
-            android:name=".ProfileCreation"
-            android:exported="false" />
-        <activity
-            android:name=".profileCreation"
-            android:exported="false" />
+            android:name=".AddBankAccount"
+            android:exported="false"
+            android:label="@string/title_activity_add_account"
+            android:theme="@style/Theme.Prog7313" />
         <activity
             android:name=".Account"
             android:exported="false" />
         <activity
-            android:name=".NavigationView"
-            android:exported="false" />
+            android:name=".AddGoalActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".AccountListActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".EditAccountActivity"
+            android:exported="false"/>
         <activity
             android:name=".EditCategories"
             android:exported="false" />
@@ -44,9 +60,6 @@
             android:exported="false" />
         <activity
             android:name=".Transactions"
-            android:exported="false" />
-        <activity
-            android:name=".Settings"
             android:exported="false" />
         <activity
             android:name=".Analytics"

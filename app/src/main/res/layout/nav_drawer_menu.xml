@@ -1,0 +1,13 @@
+<!-- nav_drawer_menu.xml -->
+<com.google.android.material.navigation.NavigationView
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/nav_view"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:layout_gravity="start"
+    android:fitsSystemWindows="true"
+    android:background="#4B3F72"
+    app:itemTextColor="@color/white"
+    app:itemIconTint="@color/white"
+    app:menu="@menu/nav_menu" />

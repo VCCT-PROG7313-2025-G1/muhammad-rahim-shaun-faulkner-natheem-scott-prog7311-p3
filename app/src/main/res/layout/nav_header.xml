@@ -1,34 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="160dp"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:background="#4B3F72"
+    android:gravity="bottom"
     android:orientation="vertical"
-    android:backgroundTint="#2B2A3C"
-    android:layout_marginTop="16dp"
-    android:layout_marginStart="16dp"
-    android:background="@color/white">
+    android:padding="16dp">
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/user_name"
-        android:paddingTop="8dp"
-        android:text="John Doe"
-        android:textColor="#FFFFFF"
-        android:textStyle="bold"/>
-
-    <TextView
+        android:id="@+id/tvUsername"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="16dp"
+        android:text="Username"
         android:textColor="#FFFFFF"
-        android:text="johnDoe@gmail.com"/>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="30dp"
-        android:background="@color/underline"/>
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
 </LinearLayout>

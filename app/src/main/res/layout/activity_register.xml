@@ -43,6 +43,17 @@
             android:textColor="#FFFFFF"
             android:textColorHint="#D3D3D3" />
 
+        <EditText
+            android:id="@+id/txtEmail"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="#4B3F72"
+            android:hint="Email"
+            android:inputType="textEmailAddress"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#D3D3D3" />
+
         <!-- Username -->
         <EditText
             android:id="@+id/txtUsername"

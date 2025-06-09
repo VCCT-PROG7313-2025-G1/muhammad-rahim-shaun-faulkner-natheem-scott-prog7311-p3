@@ -10,5 +10,7 @@
     <color name="purple_700">#3700B3</color>
     <color name="purple_200">#CF9FFF</color>
     <color name="underline">#BDB8B8</color>
+    <color name="soft_hint">#B0B0B0</color>
+    <color name="red">#F44336</color>
 
 </resources>

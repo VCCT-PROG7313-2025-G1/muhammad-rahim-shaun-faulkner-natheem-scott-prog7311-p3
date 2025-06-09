@@ -10,16 +10,14 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import android.widget.EditText
-import android.widget.LinearLayout
 import android.widget.RadioButton
 import androidx.activity.result.contract.ActivityResultContracts
-import com.example.prog7313.R.anim.slide_in_right
-import com.example.prog7313.R.anim.slide_out_left
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import android.widget.ArrayAdapter
+import android.widget.Spinner
+
 
 class Transactions : AppCompatActivity() {
 
@@ -27,9 +25,23 @@ class Transactions : AppCompatActivity() {
     // private variables
     //--------------------------------------------
 
-    private lateinit var transactionViewModel: TransactionViewModel
+    private lateinit var firestoreRepo: FirestoreRepo
+
+    private lateinit var spinnerAccounts: Spinner
+    private val accountList = mutableListOf<Account>()
+
     private lateinit var textViewSelectCategory: TextView
     private var selectedCategory: String = ""
+
+    data class Account(
+        val accountId: String,
+        val bankName: String,
+        val accountType: String
+    ) {
+        override fun toString(): String {
+            return "$bankName - $accountType"
+        }
+    }
 
     //--------------------------------------------
     // private variables for images
@@ -45,9 +57,10 @@ class Transactions : AppCompatActivity() {
     private var selectedFrequency: String? = null
     private var startTimestamp: Long? = null
     private var endTimestamp: Long? = null
+    private var isRecurring = false
 
     //--------------------------------------------
-    // Activity to open reccuring activity
+    // Activity to open reoccurring activity
     //--------------------------------------------
 
     private val recurringActivityLauncher = registerForActivityResult(
@@ -62,7 +75,7 @@ class Transactions : AppCompatActivity() {
     }
 
     //--------------------------------------------
-    // funtion to start category selection activity
+    // function to start category selection activity
     //--------------------------------------------
 
     private val categoryActivityLauncher = registerForActivityResult(
@@ -71,24 +84,23 @@ class Transactions : AppCompatActivity() {
         if (result.resultCode == Activity.RESULT_OK) {
             val data = result.data
             selectedCategory = data?.getStringExtra("selectedCategory") ?: ""
-
-            selectedCategory?.let {
-                textViewSelectCategory.text = it
-            }
+            textViewSelectCategory.text = selectedCategory
         }
     }
 
     //--------------------------------------------
-    // funtion to start photo selection activity
+    // function to start photo selection activity
     //--------------------------------------------
 
-    private  val photoActivityLauncher = registerForActivityResult(
+    private val photoActivityLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val data = result.data
-            @Suppress("DEPRECATION")
-            selectedImageUri = data?.getParcelableExtra<Uri>("selectedImageUri")
+            data?.getStringExtra("selectedImageUri")?.let { imageUrlString ->
+                selectedImageUri = Uri.parse(imageUrlString)
+                uploadPhotoButton.text = "Photo Selected"
+            }
         }
     }
 
@@ -96,21 +108,6 @@ class Transactions : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_transactions)
-
-        //--------------------------------------------
-        // bottom nav bar setup
-        //--------------------------------------------
-
-        setupNavigation()
-
-        //--------------------------------------------
-        // Initialized database, dao, repo and viewmodel
-        //--------------------------------------------
-
-        val database = AppDatabase.getDatabase(this)
-        val transactionDao = database.transactionDao()
-        val repository = TransactionRepo(transactionDao)
-        transactionViewModel = ViewModelProvider(this, TransactionViewModelFactory(repository)).get(TransactionViewModel::class.java)
 
         //--------------------------------------------
         // UI binds
@@ -122,12 +119,51 @@ class Transactions : AppCompatActivity() {
         val editTextAmount = findViewById<EditText>(R.id.etAmount)
         val editTextNotes = findViewById<EditText>(R.id.etNotes)
         val buttonSubmit = findViewById<Button>(R.id.btnSubmit)
+        textViewSelectCategory = findViewById(R.id.tvSelectCategory)
+        uploadPhotoButton = findViewById(R.id.tvUploadPhoto)
+        val tvRecurring = findViewById<TextView>(R.id.tvRecurring)
+        spinnerAccounts = findViewById(R.id.spinnerAccounts)
+
+        val firestore = FirebaseFirestore.getInstance()
+        val auth = FirebaseAuth.getInstance()
+        val currentUser = auth.currentUser
+
+        firestoreRepo = FirestoreRepo()
+
+        if (currentUser == null) {
+            Toast.makeText(this, "User not logged in!", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+
+        firestore.collection("users")
+            .document(currentUser.uid)
+            .collection("accounts")
+            .get()
+            .addOnSuccessListener { querySnapShot ->
+                accountList.clear()
+                for (doc in querySnapShot.documents) {
+                    val accountId = doc.id
+                    val bankName = doc.getString("bankName") ?: "Unknown Bank"
+                    val accountType = doc.getString("accountType") ?: "Unknown Type"
+                    accountList.add(Account(accountId, bankName, accountType))
+                }
+
+                if (accountList.isEmpty()) {
+                    Toast.makeText(this, "No accounts found! Please add an account first.", Toast.LENGTH_LONG).show()
+                }
+
+                val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, accountList)
+                adapter.setDropDownViewResource(androidx.appcompat.R.layout.support_simple_spinner_dropdown_item)
+                spinnerAccounts.adapter = adapter
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "Failed to load accounts: ${e.message}", Toast.LENGTH_LONG).show()
+            }
 
         //--------------------------------------------
         // Function to select category
         //--------------------------------------------
-
-        textViewSelectCategory = findViewById(R.id.tvSelectCategory)
 
         textViewSelectCategory.setOnClickListener {
             val intent = Intent(this, CategoryActivity::class.java)
@@ -148,8 +184,6 @@ class Transactions : AppCompatActivity() {
         // upload photo click listener
         //--------------------------------------------
 
-        uploadPhotoButton = findViewById(R.id.tvUploadPhoto)
-
         uploadPhotoButton.setOnClickListener {
             val intent = Intent(this, UploadPhoto::class.java)
             photoActivityLauncher.launch(intent)
@@ -158,9 +192,6 @@ class Transactions : AppCompatActivity() {
         //--------------------------------------------
         // recurring activity click listener
         //--------------------------------------------
-
-        val tvRecurring = findViewById<TextView>(R.id.tvRecurring)
-        var isRecurring = false
 
         tvRecurring.setOnClickListener {
             isRecurring = !isRecurring
@@ -189,80 +220,85 @@ class Transactions : AppCompatActivity() {
                 else -> ""
             }
 
-            if (transactionType.isNotEmpty()) {
-                val amount = editTextAmount.text.toString().toDoubleOrNull()
-                val notes = editTextNotes.text.toString()
+            if (transactionType.isEmpty()) {
+                Toast.makeText(this, "Please select a transaction type!", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
 
-                if (isRecurring && (startTimestamp == null || endTimestamp == null || startTimestamp!! >= endTimestamp!!)) {
+            if (selectedCategory.isEmpty()) {
+                Toast.makeText(this, "Please select a category!", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val amount = editTextAmount.text.toString().toDoubleOrNull()
+            if (amount == null || amount <= 0) {
+                Toast.makeText(this, "Please enter a valid amount!", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (isRecurring) {
+                if (startTimestamp == null || endTimestamp == null || startTimestamp!! >= endTimestamp!!) {
                     Toast.makeText(this, "Invalid recurring dates selected.", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
+            }
 
-                if (amount != null) {
-                    val transactionData = TransactionData(
-                        transactionType = transactionType,
-                        recurring = isRecurring,
-                        frequency = selectedFrequency,
-                        startTimestamp = startTimestamp,
-                        endTimestamp = endTimestamp,
-                        timestamp = if (isRecurring) startTimestamp ?: System.currentTimeMillis() else System.currentTimeMillis(),
-                        amount = amount,
-                        notes = notes,
-                        category = selectedCategory,
-                        imageUrl = selectedImageUri.toString() ?: ""
-                    )
+            if (accountList.isEmpty()) {
+                Toast.makeText(this, "Please add an account before submitting a transaction.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
 
-                    transactionViewModel.insertTransaction(transactionData)
+            val selectedAccountPosition = spinnerAccounts.selectedItemPosition
+            if (selectedAccountPosition == Spinner.INVALID_POSITION) {
+                Toast.makeText(this, "Please select an account.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
 
+            val notes = editTextNotes.text.toString()
+            val imageUrl = selectedImageUri?.toString() ?: ""
+
+            val selectedAccount = accountList[selectedAccountPosition]
+            val selectedAccountId = selectedAccount.accountId
+
+            val transaction = TransactionData(
+                transactionType = transactionType,
+                amount = amount,
+                category = selectedCategory,
+                notes = if (notes.isNotBlank()) notes else null,
+                recurring = isRecurring,
+                frequency = selectedFrequency,
+                startTimestamp = startTimestamp,
+                endTimestamp = endTimestamp,
+                imageUrl = imageUrl,
+                accountId = selectedAccountId,
+                timestamp = if (isRecurring) startTimestamp ?: System.currentTimeMillis() else System.currentTimeMillis()
+            )
+
+            firestoreRepo.addTransaction(
+                userId = FirebaseAuth.getInstance().currentUser?.uid ?: return@setOnClickListener,
+                transaction = transaction,
+                onSuccess = {
                     Toast.makeText(this, "Transaction Captured!", Toast.LENGTH_SHORT).show()
 
                     editTextAmount.text.clear()
                     editTextNotes.text.clear()
+                    selectedCategory = ""
+                    textViewSelectCategory.text = "Select Category"
+                    selectedImageUri = null
+                    isRecurring = false
+                    selectedFrequency = null
+                    startTimestamp = null
+                    endTimestamp = null
+                    tvRecurring.setBackgroundResource(R.drawable.button_rounded_dark)
 
                     val intent = Intent(this, HomepageActivity::class.java)
                     startActivity(intent)
                     finish()
+                }, onFailure = { e ->
+                    Toast.makeText(this, "Failed to save transaction: ${e.message}", Toast.LENGTH_LONG).show()
 
-                } else {
-                    Toast.makeText(this, "Please enter a valid amount!", Toast.LENGTH_SHORT).show()
                 }
-            } else {
-                Toast.makeText(this, "Please select a transaction type!", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    //--------------------------------------------
-    // bottom nav bar setup
-    //--------------------------------------------
-
-    private fun setupNavigation() {
-
-        val navHome = findViewById<LinearLayout>(R.id.navHome)
-        val navTimeline = findViewById<LinearLayout>(R.id.navTimeline)
-        val navSettings = findViewById<LinearLayout>(R.id.navSettings)
-
-        navHome.setOnClickListener {
-            val intent = Intent(this, HomepageActivity::class.java)
-            startActivity(intent)
-            // https://www.geeksforgeeks.org/how-to-add-slide-animation-between-activities-in-android/
-            overridePendingTransition(slide_in_right, slide_out_left)
-        }
-
-        navTimeline.setOnClickListener {
-            // Navigate to Timeline Activity
-            val intent = Intent(this, Timeline::class.java)
-            startActivity(intent)
-            // https://www.geeksforgeeks.org/how-to-add-slide-animation-between-activities-in-android/
-            overridePendingTransition(slide_in_right, slide_out_left)
-        }
-
-        navSettings.setOnClickListener {
-            // Navigate to Settings Activity
-            val intent = Intent(this, Settings::class.java)
-            startActivity(intent)
-            // https://www.geeksforgeeks.org/how-to-add-slide-animation-between-activities-in-android/
-            overridePendingTransition(slide_in_right, slide_out_left)
+            )
         }
     }
 }

@@ -4,7 +4,6 @@ import android.app.Dialog
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.graphics.Path
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.View
@@ -16,12 +15,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.ViewModelProvider
-import com.example.prog7313.R.anim.slide_in_right
-import com.example.prog7313.R.anim.slide_out_left
-import org.w3c.dom.Text
+import com.bumptech.glide.Glide
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import java.io.File
 
 class IndividualTransactions : AppCompatActivity() {
@@ -30,8 +26,10 @@ class IndividualTransactions : AppCompatActivity() {
     // Private variables
     //--------------------------------------------
 
-    private lateinit var viewModel: TransactionViewModel
-    private var transactionId: Long = -1L
+    private val db = FirebaseFirestore.getInstance()
+    private val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+
+    private lateinit var transactionId: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,36 +37,52 @@ class IndividualTransactions : AppCompatActivity() {
         setContentView(R.layout.activity_individual_transactions)
 
         //--------------------------------------------
-        // Bottom nav setup
-        //--------------------------------------------
-
-        setupNavigation()
-
-        //--------------------------------------------
         // Transaction logic based on transaction ID
         //--------------------------------------------
 
-        transactionId = intent.getLongExtra("transactionId", -1)
-
-        val repo = TransactionRepo(AppDatabase.getDatabase(this).transactionDao())
-        viewModel = ViewModelProvider(this, TransactionViewModelFactory(repo)).get(TransactionViewModel::class.java)
-
-        viewModel.getTransactionById(transactionId).observe(this) { transaction ->
-            transaction?.let { populateUI(it) }
+        transactionId = intent.getStringExtra("transactionId") ?: ""
+        if (transactionId.isEmpty() || currentUserId.isEmpty()) {
+            Toast.makeText(this, "Transaction not found", Toast.LENGTH_SHORT).show()
+            finish()
+            return
         }
 
-        findViewById<Button>(R.id.btnDeleteTransaction).setOnClickListener {
-            viewModel.deleteTransactionById(transactionId)
-            Toast.makeText(this, "Transaction Deleted", Toast.LENGTH_SHORT).show()
+        loadTransaction()
 
-            val intent = Intent(this@IndividualTransactions, Timeline::class.java)
-            startActivity(intent)
-            finish()
+        findViewById<Button>(R.id.btnDeleteTransaction).setOnClickListener {
+            deleteTransaction()
         }
     }
 
     //--------------------------------------------
     // Populates UI fields
+    //--------------------------------------------
+
+    private fun loadTransaction() {
+        db.collection("users")
+            .document(currentUserId)
+            .collection("transactions")
+            .document(transactionId)
+            .get()
+            .addOnSuccessListener { doc ->
+                if (doc.exists()) {
+                    val transaction = doc.toObject(TransactionData::class.java)
+                    if (transaction != null) {
+                        populateUI(transaction)
+                    }
+                } else {
+                    Toast.makeText(this, "Transaction not found", Toast.LENGTH_SHORT).show()
+                    finish()
+                }
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Failed to load transaction", Toast.LENGTH_SHORT).show()
+                finish()
+            }
+    }
+
+    //--------------------------------------------
+    // Displays transaction image
     //--------------------------------------------
 
     private fun populateUI(data: TransactionData) {
@@ -83,6 +97,8 @@ class IndividualTransactions : AppCompatActivity() {
             findViewById<TextView>(R.id.tvFrequency).text = data.frequency ?: "N/A"
             findViewById<TextView>(R.id.tvStartDate).text = data.startTimestamp?.let { formatTimestamp(it) } ?: "N/A"
             findViewById<TextView>(R.id.tvEndDate).text = data.endTimestamp?.let { formatTimestamp(it) } ?: "No end date"
+        } else {
+            findViewById<LinearLayout>(R.id.recurringOptionsContainer).visibility = View.GONE
         }
 
         val imageStatus = if (data.imageUrl.isNullOrEmpty() || !File(data.imageUrl).exists()) {
@@ -95,78 +111,80 @@ class IndividualTransactions : AppCompatActivity() {
 
         val imgTransaction = findViewById<ImageView>(R.id.imgTransaction)
 
-        if (!data.imageUrl.isNullOrEmpty() && File(data.imageUrl).exists()) {
+        if (!data.imageUrl.isNullOrEmpty()) {
             imgTransaction.visibility = View.VISIBLE
-            val bitmap = BitmapFactory.decodeFile(data.imageUrl)
-            imgTransaction.setImageBitmap(bitmap)
+
+            Glide.with(this)
+                .load(data.imageUrl)
+                .into(imgTransaction)
 
             imgTransaction.setOnClickListener {
                 showImagePopup(data.imageUrl!!)
             }
+
+            findViewById<TextView>(R.id.tvImageStatus).text = "Image Available"
+
         } else {
             imgTransaction.visibility = View.GONE
+            findViewById<TextView>(R.id.tvImageStatus).text = "No image attached"
+        }
+
+        // Load account name based on accountId
+        val accountTextView = findViewById<TextView>(R.id.tvAccountId)
+
+        if (!data.accountId.isNullOrEmpty()) {
+            db.collection("users")
+                .document(currentUserId)
+                .collection("accounts")
+                .document(data.accountId)
+                .get()
+                .addOnSuccessListener { doc ->
+                    val accountName = doc.getString("bankName") ?: "Unknown Account"
+                    val accountType = doc.getString("accountType") ?: "Unknown Type"
+                    accountTextView.text = "${accountName} - ${accountType}"
+                }
+                .addOnFailureListener {
+                    accountTextView.text = "Account: (error)"
+                }
+        } else {
+            accountTextView.text = "Account: N/A"
         }
     }
 
-    //--------------------------------------------
-    // Displays transaction image
-    //--------------------------------------------
+    private fun deleteTransaction() {
+        db.collection("users")
+            .document(currentUserId)
+            .collection("transactions")
+            .document(transactionId)
+            .delete()
+            .addOnSuccessListener {
+                Toast.makeText(this, "Transaction Deleted", Toast.LENGTH_SHORT).show()
+                val intent = Intent(this@IndividualTransactions, Timeline::class.java)
+                startActivity(intent)
+                finish()
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Failed to delete transaction", Toast.LENGTH_SHORT).show()
+            }
+    }
 
-    private fun showImagePopup(imagePath: String) {
+    private fun showImagePopup(imageUrl: String) {
         val dialog = Dialog(this)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setContentView(R.layout.dialog_image_popup)
 
         val imageView = dialog.findViewById<ImageView>(R.id.dialogImageView)
 
-        val bitmap = BitmapFactory.decodeFile(imagePath)
-        imageView.setImageBitmap(bitmap)
+        Glide.with(this)
+            .load(imageUrl)
+            .into(imageView)
 
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog.show()
     }
 
-    //--------------------------------------------
-    // Timestamp conversion
-    //--------------------------------------------
-
     private fun formatTimestamp(timestamp: Long): String {
         val sdf = java.text.SimpleDateFormat("dd MMM yyyy", java.util.Locale.getDefault())
         return sdf.format(java.util.Date(timestamp))
-    }
-
-    private fun setupNavigation() {
-
-        val navHome = findViewById<LinearLayout>(R.id.navHome)
-        val navTimeline = findViewById<LinearLayout>(R.id.navTimeline)
-        val navSettings = findViewById<LinearLayout>(R.id.navSettings)
-
-        //--------------------------------------------
-        // Click listeners
-        //--------------------------------------------
-
-
-        navHome.setOnClickListener {
-            val intent = Intent(this, HomepageActivity::class.java)
-            startActivity(intent)
-            // https://www.geeksforgeeks.org/how-to-add-slide-animation-between-activities-in-android/
-            overridePendingTransition(slide_in_right, slide_out_left)
-        }
-
-        navTimeline.setOnClickListener {
-            // Navigate to Timeline Activity
-            val intent = Intent(this, Timeline::class.java)
-            startActivity(intent)
-            // https://www.geeksforgeeks.org/how-to-add-slide-animation-between-activities-in-android/
-            overridePendingTransition(slide_in_right, slide_out_left)
-        }
-
-        navSettings.setOnClickListener {
-            // Navigate to Settings Activity
-            val intent = Intent(this, Settings::class.java)
-            startActivity(intent)
-            // https://www.geeksforgeeks.org/how-to-add-slide-animation-between-activities-in-android/
-            overridePendingTransition(slide_in_right, slide_out_left)
-        }
     }
 }

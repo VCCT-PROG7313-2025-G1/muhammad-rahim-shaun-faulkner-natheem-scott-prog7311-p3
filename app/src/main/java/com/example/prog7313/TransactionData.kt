@@ -1,24 +1,20 @@
 package com.example.prog7313
 
-import androidx.room.PrimaryKey
-import androidx.room.Entity
+import com.google.firebase.firestore.Exclude
 
-//--------------------------------------------
-// Transactions database table
-//--------------------------------------------
+data class TransactionData(
+    @get:Exclude @set:Exclude
+    var id: String = "",
 
-@Entity(tableName = "transactions")
-data class TransactionData (
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
-    val transactionType: String,
-    val recurring: Boolean,
-    val frequency: String?,
-    val startTimestamp: Long?,
-    val endTimestamp: Long?,
-    val amount: Double,
-    val notes: String?,
-    val category: String,
-    val imageUrl: String?,
-    val timestamp: Long
+    val transactionType: String = "",
+    val amount: Double = 0.0,
+    val category: String = "",
+    val notes: String? = null,
+    val recurring: Boolean = false,
+    val frequency: String? = null,
+    val startTimestamp: Long? = null,
+    val endTimestamp: Long? = null,
+    val imageUrl: String? = null,
+    val accountId: String? = null,
+    val timestamp: Long? = null
 )

@@ -8,6 +8,10 @@
     android:background="@drawable/gradient_background"
     tools:context=".IndividualTransactions">
 
+    <FrameLayout
+        android:id="@+id/main_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
     <!-- Main Content Area -->
     <RelativeLayout
         android:id="@+id/mainLayout"
@@ -69,6 +73,31 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Expense"
+                        android:textColor="#FFFFFF"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="16dp"
+                    android:background="#4B3F72"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Account"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp"
+                        android:layout_marginBottom="8dp" />
+
+                    <TextView
+                        android:id="@+id/tvAccountId"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Account"
                         android:textColor="#FFFFFF"
                         android:textSize="16sp" />
                 </LinearLayout>
@@ -332,6 +361,7 @@
             </LinearLayout>
         </ScrollView>
     </RelativeLayout>
+    </FrameLayout>
 
     <!-- Navigation Drawer -->
     <com.google.android.material.navigation.NavigationView

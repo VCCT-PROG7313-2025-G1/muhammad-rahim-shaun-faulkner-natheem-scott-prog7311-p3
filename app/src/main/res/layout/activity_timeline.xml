@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.drawerlayout.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/gradient_background"
-    tools:context=".Timeline">
+    android:layout_height="match_parent" >
 
     <!-- FrameLayout for background + content -->
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@drawable/gradient_background">
 
         <!-- Background Image -->
         <ImageView
@@ -20,6 +20,19 @@
             android:src="@drawable/ic_circles"
             android:scaleType="centerCrop"
             android:contentDescription="@null" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#4B3F72"
+                android:minHeight="?attr/actionBarSize"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
         <!-- Main Content Area -->
         <RelativeLayout
@@ -32,7 +45,6 @@
                 android:id="@+id/timelineTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/timelineToolbar"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="8dp"
                 android:text="Select a Date"
@@ -120,16 +132,9 @@
                 </LinearLayout>
             </ScrollView>
         </RelativeLayout>
+        </LinearLayout>
     </FrameLayout>
 
-    <!-- Navigation Drawer -->
-    <com.google.android.material.navigation.NavigationView
-        android:id="@+id/navigation_view"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:background="#3D2A63"
-        android:fitsSystemWindows="true"
-        app:menu="@menu/timeline_drawer_menu" />
+    <include layout="@layout/nav_drawer_menu" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

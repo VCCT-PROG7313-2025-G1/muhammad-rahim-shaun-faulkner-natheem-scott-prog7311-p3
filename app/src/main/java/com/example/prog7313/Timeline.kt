@@ -2,30 +2,18 @@ package com.example.prog7313
 
 import android.content.Intent
 import android.graphics.Color
-import android.net.Uri
 import android.os.Bundle
-import android.view.Gravity
 import android.view.LayoutInflater
-import android.widget.Button
-import android.widget.CalendarView
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.marginTop
-import androidx.core.view.setMargins
-import androidx.core.view.setPadding
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import com.example.prog7313.R.anim.slide_in_right
-import com.example.prog7313.R.anim.slide_out_left
+import androidx.appcompat.widget.Toolbar
+import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
+import java.util.*
 
 class Timeline : AppCompatActivity() {
 
@@ -33,59 +21,43 @@ class Timeline : AppCompatActivity() {
     // Viewmodel and UI elements
     //--------------------------------------------
 
-    private lateinit var transactionViewModel: TransactionViewModel
     private lateinit var calendarView: CalendarView
-    private lateinit var selectedDateText: TextView
     private lateinit var selectedDateValue: TextView
-    private lateinit var selectedDateDisplayLayout: LinearLayout
     private lateinit var transactionsTextView: TextView
+
+    private val db = FirebaseFirestore.getInstance()
+    private val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_timeline)
 
-        //--------------------------------------------
-        // Bottom nav bar setup
-        //--------------------------------------------
+        val drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        val navView = findViewById<NavigationView>(R.id.nav_view)
 
-        setupNavigation()
+        setSupportActionBar(toolbar)
+        supportActionBar?.title = "Timeline"
 
-        //--------------------------------------------
-        // Initialized database, dao, repo, factory and viewmodel
-        //--------------------------------------------
-
-        val database = AppDatabase.getDatabase(applicationContext)
-        val transactionDao = database.transactionDao()
-        val repository = TransactionRepo(transactionDao)
-        val factory = TransactionViewModelFactory(repository)
-        transactionViewModel = ViewModelProvider(this, factory)[TransactionViewModel::class.java]
+        DrawerHelper.setupDrawer(this, drawerLayout, toolbar, navView)
 
         //--------------------------------------------
         // Binds for UI elements
         //--------------------------------------------
 
         calendarView = findViewById(R.id.calendarView)
-        selectedDateText = findViewById(R.id.selectedDateText)
         selectedDateValue = findViewById(R.id.selectedDateValue)
-        selectedDateDisplayLayout = findViewById(R.id.selectedDateDisplayLayout)
         transactionsTextView = findViewById(R.id.transactionsTextView)
 
-        //--------------------------------------------
-        // Set date picker functionality
-        //--------------------------------------------
-
-        calendarView.setOnDateChangeListener {_, year, month, dayOfMonth ->
+        calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
             val selectedDate = Calendar.getInstance().apply {
                 set(year, month, dayOfMonth, 0, 0, 0)
                 set(Calendar.MILLISECOND, 0)
             }.timeInMillis
 
             selectedDateValue.text = SimpleDateFormat("dd MM yyyy", Locale.getDefault()).format(selectedDate)
-
-            transactionViewModel.getTransactionsForDate(selectedDate).observe(this, Observer { transactions ->
-                displayTransactions(transactions)
-            })
+            loadTransactionsForDate(selectedDate)
         }
 
         val today = Calendar.getInstance().apply {
@@ -96,16 +68,38 @@ class Timeline : AppCompatActivity() {
         }.timeInMillis
 
         selectedDateValue.text = SimpleDateFormat("dd MM yyyy", Locale.getDefault()).format(today)
-
         calendarView.date = today
 
-        transactionViewModel.getTransactionsForDate(today).observe(this, Observer { transactions ->
-            displayTransactions(transactions)
-        })
+        loadTransactionsForDate(today)
+    }
+
+    private fun loadTransactionsForDate(dateMillis: Long) {
+        if (currentUserId.isEmpty()) return
+
+        // Load only transactions on that specific day
+        val startOfDay = dateMillis
+        val endOfDay = dateMillis + 24 * 60 * 60 * 1000
+
+        db.collection("users")
+            .document(currentUserId)
+            .collection("transactions")
+            .whereGreaterThanOrEqualTo("timestamp", startOfDay)
+            .whereLessThan("timestamp", endOfDay)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val transactions = snapshot.documents.mapNotNull { doc ->
+                    val transaction = doc.toObject(TransactionData::class.java)
+                    transaction?.copy(id = doc.id)
+                }
+                displayTransactions(transactions)
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Failed to load transactions", Toast.LENGTH_SHORT).show()
+            }
     }
 
     //--------------------------------------------
-    // Transactions diplsayed in list
+    // Transactions displayed in list
     //--------------------------------------------
 
     private fun displayTransactions(transactions: List<TransactionData>) {
@@ -148,35 +142,6 @@ class Timeline : AppCompatActivity() {
             }
 
             container.addView(view)
-        }
-    }
-
-    //--------------------------------------------
-    // Bottom nav setup
-    //--------------------------------------------
-
-    private fun setupNavigation() {
-
-        val navHome = findViewById<LinearLayout>(R.id.navHome)
-        val navSettings = findViewById<LinearLayout>(R.id.navSettings)
-
-        //--------------------------------------------
-        // Click listeners for nav bar
-        //--------------------------------------------
-
-        navHome.setOnClickListener {
-            val intent = Intent(this, HomepageActivity::class.java)
-            startActivity(intent)
-            // https://www.geeksforgeeks.org/how-to-add-slide-animation-between-activities-in-android/
-            overridePendingTransition(slide_in_right, slide_out_left)
-        }
-
-        navSettings.setOnClickListener {
-            // Navigate to Settings Activity
-            val intent = Intent(this, Settings::class.java)
-            startActivity(intent)
-            // https://www.geeksforgeeks.org/how-to-add-slide-animation-between-activities-in-android/
-            overridePendingTransition(slide_in_right, slide_out_left)
         }
     }
 }

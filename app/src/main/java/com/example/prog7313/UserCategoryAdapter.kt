@@ -5,29 +5,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.view.menu.MenuView.ItemView
 import androidx.recyclerview.widget.RecyclerView
 
-class UserCategoryAdapter (
-
-    //--------------------------------------------
-    // Recycler view
-    // https://stackoverflow.com/questions/49969278/recyclerview-item-click-listener-the-right-way
-    //--------------------------------------------
-
+class UserCategoryAdapter(
     private var categories: List<UserCategoryData>,
-            private val onDeleteClick: (UserCategoryData) -> Unit
+    private val onDeleteClick: (UserCategoryData) -> Unit
 ) : RecyclerView.Adapter<UserCategoryAdapter.CategoryViewHolder>() {
 
-    inner class CategoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val tvName: TextView = itemView.findViewById(R.id.tvCustomName)
-        val ivDelete: ImageView = itemView.findViewById(R.id.ivDelete)
+    inner class CategoryViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val categoryName: TextView = view.findViewById(R.id.tvCustomName)
+        val deleteButton: ImageView = view.findViewById(R.id.ivDelete)
     }
-
-    //--------------------------------------------
-    // Creates view holder for category
-    // https://stackoverflow.com/questions/52224165/struggling-with-context-inflating-a-recyclerview-list-item
-    //--------------------------------------------
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -37,21 +25,17 @@ class UserCategoryAdapter (
 
     override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) {
         val category = categories[position]
-        holder.tvName.text = category.name
+        holder.categoryName.text = category.name
 
-        holder.ivDelete.setOnClickListener {
+        holder.deleteButton.setOnClickListener {
             onDeleteClick(category)
         }
     }
 
-    //--------------------------------------------
-    // gets size of category items
-    //--------------------------------------------
-
     override fun getItemCount(): Int = categories.size
 
-    fun updateData(newList: List<UserCategoryData>) {
-        categories = newList
+    fun updateData(newCategories: List<UserCategoryData>) {
+        categories = newCategories
         notifyDataSetChanged()
     }
 }

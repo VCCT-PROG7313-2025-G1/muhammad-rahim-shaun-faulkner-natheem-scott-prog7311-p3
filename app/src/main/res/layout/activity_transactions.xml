@@ -6,6 +6,10 @@
     android:layout_height="match_parent"
     android:background="@drawable/gradient_background">
 
+    <FrameLayout
+        android:id="@+id/main_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
     <!-- Container to layer background + main content -->
     <FrameLayout
         android:layout_width="match_parent"
@@ -127,6 +131,18 @@
                         android:textAlignment="center"
                         android:textColor="#FFFFFF" />
 
+                    <Spinner
+                        android:id="@+id/spinnerAccounts"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="32dp"
+                        android:prompt="@string/select_account"
+                        android:background="@drawable/input_background"
+                        android:textAlignment="center"
+                        android:textColorHint="#DAD1FF"
+                        android:padding="16dp"
+                        />
+
                     <!-- Photo Confirmation -->
                     <TextView
                         android:id="@+id/tvPhotoConfirmation"
@@ -165,6 +181,7 @@
                 </LinearLayout>
             </ScrollView>
         </RelativeLayout>
+    </FrameLayout>
     </FrameLayout>
 
     <!-- Navigation Drawer -->

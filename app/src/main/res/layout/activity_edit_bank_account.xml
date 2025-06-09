@@ -1,0 +1,109 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp"
+    android:background="@drawable/gradient_background">
+
+    <!-- Bank Name Input -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/bankNameLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Bank Name"
+        app:boxBackgroundMode="filled"
+        app:boxBackgroundColor="#332B50"
+        app:boxCornerRadiusTopStart="16dp"
+        app:boxCornerRadiusTopEnd="16dp"
+        app:boxCornerRadiusBottomStart="16dp"
+        app:boxCornerRadiusBottomEnd="16dp"
+        app:hintTextColor="@color/soft_hint"
+        app:boxStrokeColor="#DAD1FF"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etBankName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textCapWords"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#DAD1FF"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Account Type Dropdown -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/accountTypeLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Account Type"
+        app:endIconMode="dropdown_menu"
+        app:boxBackgroundMode="filled"
+        app:boxBackgroundColor="#332B50"
+        app:boxCornerRadiusTopStart="16dp"
+        app:boxCornerRadiusTopEnd="16dp"
+        app:boxCornerRadiusBottomStart="16dp"
+        app:boxCornerRadiusBottomEnd="16dp"
+        app:hintTextColor="@color/soft_hint"
+        app:boxStrokeColor="#DAD1FF"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/bankNameLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <AutoCompleteTextView
+            android:id="@+id/actvAccountType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#DAD1FF"
+            android:inputType="none"
+            android:importantForAutofill="no"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Balance Input -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/balanceLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Balance"
+        app:boxBackgroundMode="filled"
+        app:boxBackgroundColor="#332B50"
+        app:boxCornerRadiusTopStart="16dp"
+        app:boxCornerRadiusTopEnd="16dp"
+        app:boxCornerRadiusBottomStart="16dp"
+        app:boxCornerRadiusBottomEnd="16dp"
+        app:hintTextColor="@color/soft_hint"
+        app:boxStrokeColor="#DAD1FF"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/accountTypeLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etBalance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#DAD1FF"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Update Button -->
+    <Button
+        android:id="@+id/btnUpdateAccount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Update Account"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/button_rounded_dark"
+        android:elevation="4dp"
+        app:layout_constraintTop_toBottomOf="@id/balanceLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

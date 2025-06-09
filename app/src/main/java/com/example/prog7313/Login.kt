@@ -6,29 +6,18 @@ import androidx.appcompat.app.AppCompatActivity
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.Observer
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class Login : AppCompatActivity() {
 
-    //--------------------------------------------
-    // View model for user database
-    //--------------------------------------------
-
-    private lateinit var userViewModel: UserViewModel
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        //--------------------------------------------
-        // Initialized database, dao, repo and viewmodel
-        //--------------------------------------------
-
-        val database = AppDatabase.getDatabase(this)
-        val userDao = database.userDao()
-        val repository = UserRepository(userDao)
-        userViewModel = ViewModelProvider(this, UserViewModelFactory(repository)).get(UserViewModel::class.java)
+        auth = FirebaseAuth.getInstance()
 
         //--------------------------------------------
         // Component references
@@ -47,21 +36,30 @@ class Login : AppCompatActivity() {
             val password = editTextPassword.text.toString().trim()
 
             if (username.isNotEmpty() && password.isNotEmpty()) {
-                userViewModel.getUserByUsername(username).observe(this, Observer { user ->
-                    if (user != null) {
-                        if (user.password == password) {
-                            Toast.makeText(this, "Login Successful!", Toast.LENGTH_SHORT).show()
-
-                            val intent = Intent(this, HomepageActivity::class.java)
-                            startActivity(intent)
-                            finish()
+                val db = FirebaseFirestore.getInstance()
+                db.collection("users")
+                    .whereEqualTo("userName", username)
+                    .get()
+                    .addOnSuccessListener { documents ->
+                        if (!documents.isEmpty) {
+                            val email = documents.documents[0].getString("email")
+                            FirebaseAuth.getInstance().signInWithEmailAndPassword(email!!, password)
+                                .addOnCompleteListener { task ->
+                                    if (task.isSuccessful) {
+                                        Toast.makeText(this, "Login Successful!", Toast.LENGTH_SHORT).show()
+                                        startActivity(Intent(this, HomepageActivity::class.java))
+                                        finish()
+                                    } else {
+                                        Toast.makeText(this, "Incorrect Password!", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
                         } else {
-                            Toast.makeText(this, "Incorrect Password!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "User not found!", Toast.LENGTH_SHORT).show()
                         }
-                    } else {
-                        Toast.makeText(this, "User not found!", Toast.LENGTH_SHORT).show()
                     }
-                })
+                    .addOnFailureListener {
+                        Toast.makeText(this, "Login failed: ${it.message}", Toast.LENGTH_SHORT).show()
+                    }
             } else {
                 Toast.makeText(this, "Please fill in all fields!", Toast.LENGTH_SHORT).show()
             }

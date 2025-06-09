@@ -1,50 +1,61 @@
 package com.example.prog7313
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
+import androidx.lifecycle.ViewModel
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
-class UserCategoryViewModel(application: Application) : AndroidViewModel(application) {
+class UserCategoryViewModel : ViewModel() {
 
-    //--------------------------------------------
-    // private values
-    //--------------------------------------------
-
-    private val userCategoryDao: UserCategoryDao = AppDatabase.getDatabase(application).userCategoryDao()
     private val _categories = MutableLiveData<List<UserCategoryData>>()
-    val categories: LiveData<List<UserCategoryData>> = _categories
+    val categories: LiveData<List<UserCategoryData>> get() = _categories
 
-    //--------------------------------------------
-    // load category function
-    //--------------------------------------------
-
-    fun loadCategories(transactionType: String?) {
-        if (transactionType != null) {
-            viewModelScope.launch {
-                val categoryList = userCategoryDao.getCategoriesByType(transactionType)
-                _categories.postValue(categoryList)
-            }
-        }
-    }
+    private val db = FirebaseFirestore.getInstance()
+    private val auth = FirebaseAuth.getInstance()
 
     fun loadAllCategories() {
-        viewModelScope.launch {
-            val allCategories = userCategoryDao.getAllCategories()
-            _categories.postValue(allCategories)
-        }
+        val userId = auth.currentUser?.uid ?: return
+
+        db.collection("users")
+            .document(userId)
+            .collection("categories")
+            .get()
+            .addOnSuccessListener { result ->
+                val categoryList = result.documents.map { doc ->
+                    UserCategoryData(
+                        name = doc.getString("name") ?: "",
+                        transactionType = doc.getString("transactionType") ?: "",
+                        id = doc.id
+                    )
+                }
+                _categories.value = categoryList
+            }
+            .addOnFailureListener { exception ->
+                _categories.value = emptyList()
+            }
     }
 
-    //--------------------------------------------
-    // delete category function
-    //--------------------------------------------
+    fun loadCategories(transactionType: String?) {
+        val userId = auth.currentUser?.uid ?: return
 
-    fun deleteCategory(categoryId: UserCategoryData) {
-        viewModelScope.launch {
-            userCategoryDao.delete(categoryId)
-            _categories.postValue(userCategoryDao.getCategoriesByType("Expense"))
-        }
+        db.collection("users")
+            .document(userId)
+            .collection("categories")
+            .whereEqualTo("transactionType", transactionType)
+            .get()
+            .addOnSuccessListener { result ->
+                val categoryList = result.documents.map { doc ->
+                    UserCategoryData(
+                        name = doc.getString("name") ?: "",
+                        transactionType = doc.getString("transactionType") ?: "",
+                        id = doc.id
+                    )
+                }
+                _categories.value = categoryList
+            }
+            .addOnFailureListener { exception ->
+                _categories.value = emptyList()
+            }
     }
 }

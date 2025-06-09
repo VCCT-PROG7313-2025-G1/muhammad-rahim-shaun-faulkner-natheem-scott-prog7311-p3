@@ -4,39 +4,45 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
-import android.widget.LinearLayout
 import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.lifecycleScope
-import com.example.prog7313.R.anim.slide_in_right
-import com.example.prog7313.R.anim.slide_out_left
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import androidx.appcompat.widget.Toolbar
+import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class CreateCategory : AppCompatActivity() {
+
+    private lateinit var radioGroup: RadioGroup
+    private lateinit var editCategoryName: EditText
+    private lateinit var btnCreateCategory: Button
+    private lateinit var btnEditCategory: Button
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_create_category)
 
-        //--------------------------------------------
-        // Bottom navigation bar
-        //--------------------------------------------
+        val drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        val navView = findViewById<NavigationView>(R.id.nav_view)
 
-        setupNavigation()
+        setSupportActionBar(toolbar)
+        supportActionBar?.title = "Create Category"
+
+        DrawerHelper.setupDrawer(this, drawerLayout, toolbar, navView)
 
         //--------------------------------------------
         // Get references
         //--------------------------------------------
 
-        val radioGroup = findViewById<RadioGroup>(R.id.radioGroup)
-        val editCategoryName = findViewById<EditText>(R.id.editCategoryName)
-        val btnCreateCategory = findViewById<Button>(R.id.btnCreateCategory)
+        radioGroup = findViewById(R.id.radioGroup)
+        editCategoryName = findViewById(R.id.editCategoryName)
+        btnCreateCategory = findViewById(R.id.btnCreateCategory)
+        btnEditCategory = findViewById(R.id.btnEditCategories)
 
         //--------------------------------------------
         // Handle category logic
@@ -45,65 +51,41 @@ class CreateCategory : AppCompatActivity() {
         btnCreateCategory.setOnClickListener {
             val selectedId = radioGroup.checkedRadioButtonId
             val type = if (selectedId == R.id.radioIncome) "Income" else "Expense"
-            val name = editCategoryName.text.toString()
+            val name = editCategoryName.text.toString().trim()
 
-            if (name.isNotBlank()) {
-                val category = UserCategoryData(name = name, transactionType = type)
-                lifecycleScope.launch {
-                    AppDatabase.getDatabase(applicationContext).userCategoryDao().insert(category)
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(this@CreateCategory, "Category Created!", Toast.LENGTH_SHORT).show()
-                        finish()
-                    }
-                }
-            } else {
+            if (name.isEmpty()) {
                 Toast.makeText(this, "Enter a category name", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
-        }
 
-        val btnEditCategory = findViewById<Button>(R.id.btnEditCategories)
+            val currentUser = FirebaseAuth.getInstance().currentUser
+            if (currentUser == null) {
+                Toast.makeText(this, "User not authenticated", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val category = hashMapOf(
+                "name" to name,
+                "transactionType" to type
+            )
+
+            FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(currentUser.uid)
+                .collection("categories")
+                .add(category)
+                .addOnSuccessListener {
+                    Toast.makeText(this, "Category Created!", Toast.LENGTH_SHORT).show()
+                    finish()
+                }
+                .addOnFailureListener { e ->
+                    Toast.makeText(this, "Failed to create category: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+        }
 
         btnEditCategory.setOnClickListener {
             val intent = Intent(this, EditCategories::class.java)
             startActivity(intent)
-        }
-    }
-
-    //--------------------------------------------
-    // Bottom nav bar navigation
-    //--------------------------------------------
-
-    private fun setupNavigation() {
-
-        val navHome = findViewById<LinearLayout>(R.id.navHome)
-        val navTimeline = findViewById<LinearLayout>(R.id.navTimeline)
-        val navSettings = findViewById<LinearLayout>(R.id.navSettings)
-
-        //--------------------------------------------
-        // Click listeners
-        //--------------------------------------------
-
-        navHome.setOnClickListener {
-            val intent = Intent(this, HomepageActivity::class.java)
-            startActivity(intent)
-            // https://www.geeksforgeeks.org/how-to-add-slide-animation-between-activities-in-android/
-            overridePendingTransition(slide_in_right, slide_out_left)
-        }
-
-        navTimeline.setOnClickListener {
-            // Navigate to Timeline Activity
-            val intent = Intent(this, Timeline::class.java)
-            startActivity(intent)
-            // https://www.geeksforgeeks.org/how-to-add-slide-animation-between-activities-in-android/
-            overridePendingTransition(slide_in_right, slide_out_left)
-        }
-
-        navSettings.setOnClickListener {
-            // Navigate to Settings Activity
-            val intent = Intent(this, Settings::class.java)
-            startActivity(intent)
-            // https://www.geeksforgeeks.org/how-to-add-slide-animation-between-activities-in-android/
-            overridePendingTransition(slide_in_right, slide_out_left)
         }
     }
 }

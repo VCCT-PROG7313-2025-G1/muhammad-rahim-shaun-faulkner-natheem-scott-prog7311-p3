@@ -4,24 +4,21 @@ import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.View
-import android.widget.LinearLayout
+import android.widget.*
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import com.example.prog7313.R.anim.slide_in_right
-import com.example.prog7313.R.anim.slide_out_left
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
-import androidx.lifecycle.Observer
+import androidx.appcompat.widget.Toolbar
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
-import java.util.Date
 import java.util.Locale
-import androidx.core.widget.addTextChangedListener
-import kotlin.math.roundToInt
 
 
 class HomepageActivity : AppCompatActivity() {
@@ -30,12 +27,11 @@ class HomepageActivity : AppCompatActivity() {
     // View model declarations
     //--------------------------------------------
 
-    private lateinit var transactionViewModel: TransactionViewModel
-    private lateinit var tvCurrentDate: TextView
-    private lateinit var etMinGoal: EditText
-    private lateinit var etMaxGoal: EditText
     private lateinit var progressBar: ProgressBar
-    private var totalBalanceValue = 0.0
+
+    private lateinit var tvMinGoal: TextView
+    private lateinit var tvMaxGoal: TextView
+
     private var minGoalValue = 0.0
     private var maxGoalValue = 0.0
 
@@ -50,14 +46,31 @@ class HomepageActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_homepage)
 
-        //--------------------------------------------
-        // Initialized TransactionViewModel
-        //--------------------------------------------
+        val drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        val navView = findViewById<NavigationView>(R.id.nav_view)
 
-        val dao = AppDatabase.getDatabase(application).transactionDao()
-        val repository = TransactionRepo(dao)
-        val factory = TransactionViewModelFactory(repository)
-        transactionViewModel = ViewModelProvider(this, factory)[TransactionViewModel::class.java]
+        setSupportActionBar(toolbar)
+        supportActionBar?.title = "Home"
+
+        DrawerHelper.setupDrawer(this, drawerLayout, toolbar, navView)
+
+        tvMinGoal = findViewById(R.id.tvMinGoal)
+        tvMaxGoal = findViewById(R.id.tvMaxGoal)
+
+        val btnSetGoal = findViewById<Button>(R.id.btnSetGoal)
+
+        btnSetGoal.setOnClickListener {
+            val intent = Intent(this, AddGoalActivity::class.java)
+            startActivity(intent)
+        }
+
+        val btnAddTransaction = findViewById<Button>(R.id.btnAddTransaction)
+
+        btnAddTransaction.setOnClickListener {
+            val intent = Intent(this, Transactions::class.java)
+            startActivity(intent)
+        }
 
         //--------------------------------------------
         // Initialized HomePageViewModel
@@ -66,32 +79,22 @@ class HomepageActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this)[HomePageViewModel::class.java]
 
         //--------------------------------------------
-        // Bottom nav setup
-        //--------------------------------------------
-
-        setupNavigation()
-
-        //--------------------------------------------
         // Display and update balance
         //--------------------------------------------
 
-        val tvIncomeTotalDisplay: TextView = findViewById(R.id.tvIncomeTotalDisplay)
+        val totalBalanceText: TextView = findViewById(R.id.tvIncomeTotalDisplay)
+        val recyclerView = findViewById<RecyclerView>(R.id.recycler_accounts)
 
-        viewModel.balanceLiveData.observe(this) { balance ->
-            tvIncomeTotalDisplay.text = "R %.2f".format(balance)
-            totalBalanceValue = balance
-        }
+        recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
         viewModel.calculateBalance()
+        viewModel.loadAccounts()
 
-        //--------------------------------------------
-        // Display current date
-        //--------------------------------------------
-
-        tvCurrentDate = findViewById(R.id.tvDate)
-
-        val date = SimpleDateFormat("EEEE, dd MMMM yyyy", Locale.getDefault()).format(Date())
-        tvCurrentDate.text = date
+        viewModel.accountList.observe(this) { accounts ->
+            recyclerView.adapter = AccountAdapter(accounts)
+            val totalBalance = accounts.sumOf { it.balance }
+            totalBalanceText.text = "R %.2f".format(totalBalance)
+        }
 
         //--------------------------------------------
         // Display income and expense
@@ -113,52 +116,9 @@ class HomepageActivity : AppCompatActivity() {
         // Setup goal inputs and progress bar
         //--------------------------------------------
 
-        viewModel.loadMonthlyExpense()
-
-        etMinGoal = findViewById(R.id.etMinGoal)
-        etMaxGoal = findViewById(R.id.etMaxGoal)
         progressBar = findViewById(R.id.progressBar)
 
-        val prefs = getSharedPreferences("budget_prefs", MODE_PRIVATE)
-        val savedMin = prefs.getFloat("min_goal", 0f)
-        val savedMax = prefs.getFloat("max_goal", 0f)
-
-        etMinGoal.setText("R %.0f".format(savedMin))
-        etMaxGoal.setText("R %.0f".format(savedMax))
-
-        viewModel.setMinGoal(savedMin.toDouble())
-        viewModel.setMaxGoal(savedMax.toDouble())
-
-        //--------------------------------------------
-        // Save and update min goal
-        //--------------------------------------------
-
-        etMinGoal.setOnFocusChangeListener {_, hasFocus ->
-            if (!hasFocus) {
-                val input = etMinGoal.text.toString().replace("R", "").trim()
-                minGoalValue = input.toDoubleOrNull() ?: 0.0
-                viewModel.setMinGoal(minGoalValue)
-                updateProgressAndGoalLines()
-                saveGoals()
-                etMinGoal.setText("R %.0f".format(minGoalValue))
-            }
-        }
-
-        //--------------------------------------------
-        // Save and update max goal
-        //--------------------------------------------
-
-        etMaxGoal.setOnFocusChangeListener {_, hasFocus ->
-            if (!hasFocus) {
-                val input = etMaxGoal.text.toString().replace("R", "").trim()
-                maxGoalValue = input.toDoubleOrNull() ?: 0.0
-                viewModel.setMaxGoal(maxGoalValue)
-                viewModel.refreshMonthlyExpense()
-                updateProgressAndGoalLines()
-                saveGoals()
-                etMaxGoal.setText("R %.0f".format(maxGoalValue))
-            }
-        }
+        loadCurrentMonthGoals()
 
         //--------------------------------------------
         // Observe and update progress
@@ -166,8 +126,6 @@ class HomepageActivity : AppCompatActivity() {
 
         viewModel.progressPercent.observe(this) { percent ->
             progressBar.progress = percent
-            minGoalValue = etMinGoal.text.toString().replace("R", "").toDoubleOrNull() ?: 0.0
-            maxGoalValue = etMaxGoal.text.toString().replace("R", "").toDoubleOrNull() ?: 0.0
 
             progressBar.post {
                 updateProgressAndGoalLines(percent)
@@ -179,39 +137,105 @@ class HomepageActivity : AppCompatActivity() {
         //--------------------------------------------
 
         val categoryTotalsContainer = findViewById<LinearLayout>(R.id.categoryTotalsContainer)
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val db = FirebaseFirestore.getInstance()
 
-        transactionViewModel.getTotalSpentByCategory().observe(this, Observer { categoryTotals ->
-            categoryTotalsContainer.removeAllViews()
+        db.collection("users")
+            .document(userId)
+            .collection("transactions")
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val transactions = snapshot.documents.mapNotNull { doc ->
+                    doc.toObject(TransactionData::class.java)
+                }
 
-            val categoryIcons = mapOf(
-                "housing" to R.drawable.ic_housing,
-                "healthcare" to R.drawable.ic_healthcare,
-                "takeout" to R.drawable.ic_takeout,
-                "groceries" to R.drawable.ic_groceries,
-                "transportation" to R.drawable.ic_transportation,
-                "utilities" to R.drawable.ic_ultilities,
-                "entertainment" to R.drawable.ic_entertainment,
-                "salary" to R.drawable.ic_salary,
-                "loan" to R.drawable.ic_loan,
-                "transfer" to R.drawable.ic_gift
-            )
+                val categoryTotals = transactions
+                    .groupBy { it.category }
+                    .map { (category, txns) ->
+                        CategoryTotal(category, txns.sumOf { it.amount })
+                    }
 
-            categoryTotals.forEach { total ->
-                val view = layoutInflater.inflate(R.layout.item_category_total, categoryTotalsContainer, false)
+                categoryTotalsContainer.removeAllViews()
 
-                val ivIcon = view.findViewById<ImageView>(R.id.ivCategoryIcon)
-                val tvName = view.findViewById<TextView>(R.id.tvCategoryName)
-                val tvTotal = view.findViewById<TextView>(R.id.tvCategoryTotal)
+                val categoryIcons = mapOf(
+                    "housing" to R.drawable.ic_housing,
+                    "healthcare" to R.drawable.ic_healthcare,
+                    "takeout" to R.drawable.ic_takeout,
+                    "groceries" to R.drawable.ic_groceries,
+                    "transportation" to R.drawable.ic_transportation,
+                    "utilities" to R.drawable.ic_ultilities,
+                    "entertainment" to R.drawable.ic_entertainment,
+                    "salary" to R.drawable.ic_salary,
+                    "loan" to R.drawable.ic_loan,
+                    "transfer" to R.drawable.ic_gift
+                )
 
-                tvName.text = total.category
-                tvTotal.text = "R ${total.totalSpent}"
+                categoryTotals.forEach { total ->
+                    val view = layoutInflater.inflate(R.layout.item_category_total, categoryTotalsContainer, false)
+                    val ivIcon = view.findViewById<ImageView>(R.id.ivCategoryIcon)
+                    val tvName = view.findViewById<TextView>(R.id.tvCategoryName)
+                    val tvTotal = view.findViewById<TextView>(R.id.tvCategoryTotal)
 
-                val iconResId = categoryIcons[total.category.lowercase()] ?: R.drawable.ic_universal
-                ivIcon.setImageResource(iconResId)
+                    tvName.text = total.category
+                    tvTotal.text = "R %.2f".format(total.totalSpent)
+                    val iconResId = categoryIcons[total.category.lowercase()] ?: R.drawable.ic_universal
+                    ivIcon.setImageResource(iconResId)
 
-                categoryTotalsContainer.addView(view)
+                    categoryTotalsContainer.addView(view)
+                }
             }
-        })
+            .addOnFailureListener {
+                Toast.makeText(this, "Failed to load category totals", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun loadCurrentMonthGoals() {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val db = FirebaseFirestore.getInstance()
+
+        val currentMonth = SimpleDateFormat("yyyy-MM", Locale.getDefault())
+            .format(java.util.Date())
+
+        db.collection("users")
+            .document(userId)
+            .collection("goals")
+            .whereEqualTo("month", currentMonth)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                Log.d("HomepageActivity", "Goals loaded, count: ${snapshot.size()}")
+                if (!snapshot.isEmpty) {
+                    val doc = snapshot.documents[0]
+                    minGoalValue = doc.getDouble("minGoal") ?: 0.0
+                    maxGoalValue = doc.getDouble("maxGoal") ?: 0.0
+                    Log.d("HomepageActivity", "minGoal=$minGoalValue maxGoal=$maxGoalValue")
+
+                    tvMinGoal.text = "R %.2f".format(minGoalValue)
+                    tvMaxGoal.text = "R %.2f".format(maxGoalValue)
+
+                    viewModel.setMinGoal(minGoalValue)
+                    viewModel.setMaxGoal(maxGoalValue)
+
+                    val progressPercent = progressBar.progress
+                    updateProgressAndGoalLines(progressPercent)
+
+                } else {
+                    minGoalValue = 0.0
+                    maxGoalValue = 0.0
+                    tvMinGoal.text = "R 0.00"
+                    tvMaxGoal.text = "R 0.00"
+
+                    viewModel.setMinGoal(0.0)
+                    viewModel.setMaxGoal(0.0)
+
+                    updateProgressAndGoalLines(0)
+                    Log.d("HomepageActivity", "No goals found for current month")
+                }
+
+                viewModel.loadMonthlyExpense()
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Failed to load monthly goals", Toast.LENGTH_SHORT).show()
+            }
     }
 
     //--------------------------------------------
@@ -247,87 +271,6 @@ class HomepageActivity : AppCompatActivity() {
             maxGoalLine.translationX = (progressWidth * 1.0).toFloat() - (maxGoalLine.width / 2)
         } else {
             maxGoalLine.visibility = View.INVISIBLE
-        }
-    }
-
-    //--------------------------------------------
-    // Save goal values
-    //--------------------------------------------
-
-    private fun saveGoals() {
-        val prefs = getSharedPreferences("budget_prefs", MODE_PRIVATE)
-        val editor = prefs.edit()
-
-        val minInput = etMinGoal.text.toString().replace("R", "").trim()
-        val maxInput = etMaxGoal.text.toString().replace("R", "").trim()
-
-        editor.putFloat("min_goal", minInput.toFloatOrNull() ?: 0f)
-        editor.putFloat("max_goal", maxInput.toFloatOrNull() ?: 0f)
-        editor.apply()
-    }
-
-    //--------------------------------------------
-    // Restore goal values
-    //--------------------------------------------
-
-    override fun onResume() {
-        super.onResume()
-
-        val prefs = getSharedPreferences("budget_prefs", MODE_PRIVATE)
-        val savedMin = prefs.getFloat("min_goal", 0f)
-        val savedMax = prefs.getFloat("max_goal", 0f)
-
-        etMinGoal.setText("R %.0f".format(savedMin))
-        etMaxGoal.setText("R %.0f".format(savedMax))
-        minGoalValue = savedMin.toDouble()
-        maxGoalValue = savedMax.toDouble()
-
-        viewModel.restoreGoals(minGoalValue, maxGoalValue)
-        viewModel.calculateBalance()
-    }
-
-    //--------------------------------------------
-    // Save goals before activity pause
-    //--------------------------------------------
-
-    override fun onPause() {
-        super.onPause()
-        saveGoals()
-    }
-
-    //--------------------------------------------
-    // Bottom navigation setup
-    //--------------------------------------------
-
-    private fun setupNavigation() {
-
-        val navTimeline = findViewById<LinearLayout>(R.id.navTimeline)
-        val navSettings = findViewById<LinearLayout>(R.id.navSettings)
-        val buttonAddTransaction = findViewById<Button>(R.id.btnAddTransaction)
-
-        //--------------------------------------------
-        // Click listeners
-        //--------------------------------------------
-
-        navTimeline.setOnClickListener {
-            // Navigate to Timeline Activity
-            val intent = Intent(this, Timeline::class.java)
-            startActivity(intent)
-            // https://www.geeksforgeeks.org/how-to-add-slide-animation-between-activities-in-android/
-            overridePendingTransition(slide_in_right, slide_out_left)
-        }
-
-        navSettings.setOnClickListener {
-            // Navigate to Settings Activity
-            val intent = Intent(this, Settings::class.java)
-            startActivity(intent)
-            // https://www.geeksforgeeks.org/how-to-add-slide-animation-between-activities-in-android/
-            overridePendingTransition(slide_in_right, slide_out_left)
-        }
-
-        buttonAddTransaction.setOnClickListener {
-            val intent = Intent(this, Transactions::class.java)
-            startActivity(intent)
         }
     }
 }

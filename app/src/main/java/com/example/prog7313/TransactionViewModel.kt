@@ -1,57 +1,44 @@
 package com.example.prog7313
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.liveData
-import androidx.room.Transaction
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import java.sql.Timestamp
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
-class TransactionViewModel(private val repository: TransactionRepo) : ViewModel() {
+data class CategoryTotal(
+    val category: String = "",
+    val totalSpent: Double = 0.0
+)
 
-    //--------------------------------------------
-    // Database functions
-    //--------------------------------------------
+class TransactionViewModel : ViewModel() {
 
-    fun insertTransaction(transactionData: TransactionData) {
-        CoroutineScope(Dispatchers.IO).launch {
-            repository.insertTransaction(transactionData)
-        }
-    }
+    private val db = FirebaseFirestore.getInstance()
+    private val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
-    fun getTotalSpentByCategory() = liveData(Dispatchers.IO) {
-        emit(repository.getTotalSpentByCategory())
-    }
+    private val _categoryTotals = MutableLiveData<List<CategoryTotal>>()
+    val categoryTotals: LiveData<List<CategoryTotal>> = _categoryTotals
 
-    fun getTransactionsForDate(selectedDateTimestamp: Long) = liveData(Dispatchers.IO) {
-        emit(repository.getTransactionsForDate(selectedDateTimestamp))
-    }
+    fun loadTotalSpentByCategory() {
+        db.collection("users")
+            .document(userId)
+            .collection("transactions")
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val totalsMap = mutableMapOf<String, Double>()
 
-    fun getTransactionById(transactionId: Long) = liveData(Dispatchers.IO) {
-        emit(repository.getTransactionById(transactionId))
-    }
+                for (doc in snapshot) {
+                    val transactionType = doc.getString("transactionType")
+                    val category = doc.getString("category") ?: "Uncategorized"
+                    val amount = doc.getDouble("amount") ?: continue
 
-    fun deleteTransactionById(transactionId: Long) {
-        CoroutineScope(Dispatchers.IO).launch {
-            repository.deleteTransactionById(transactionId)
-        }
-    }
-}
+                    if (transactionType == "Expense") {
+                        totalsMap[category] = (totalsMap[category] ?: 0.0) + amount
+                    }
+                }
 
-//--------------------------------------------
-// Factory setup for view model
-//--------------------------------------------
-
-class TransactionViewModelFactory(private val repository: TransactionRepo) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(TransactionViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return TransactionViewModel(repository) as T
-        } else {
-            throw IllegalArgumentException("Unknown ViewModel Class")
-        }
+                val result = totalsMap.map { CategoryTotal(it.key, it.value) }
+                _categoryTotals.value = result
+            }
     }
 }

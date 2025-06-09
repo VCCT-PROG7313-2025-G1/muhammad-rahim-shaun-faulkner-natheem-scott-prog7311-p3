@@ -73,7 +73,7 @@ class CategoryActivity : AppCompatActivity() {
 
             container.removeAllViews()
 
-            customCategories?.forEach { category ->
+            customCategories.forEach { category ->
                 val categoryView = inflater.inflate(R.layout.category_item, null)
 
                 val categoryIcon = categoryView.findViewById<ImageView>(R.id.ivCategoryIcon)
