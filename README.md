@@ -61,7 +61,7 @@ Make sure your that your local local.properties file includes the correct Androi
 ________________________________________
 # GitHub Repository
 Access the full source code of the entire project below:
-👉 [https://github.com/hdimp/muhammad-rahim-shaun-faulkner-natheem-scott-prog7311-p3]
+👉 [https://github.com/VCCT-PROG7313-2025-G1/muhammad-rahim-shaun-faulkner-natheem-scott-prog7311-p3]
 ________________________________________
 # YouTube Demo
 Watch the demo showcasing that the android application runs on a mobile device and shows all the features that are required for POE Part 3 here:
