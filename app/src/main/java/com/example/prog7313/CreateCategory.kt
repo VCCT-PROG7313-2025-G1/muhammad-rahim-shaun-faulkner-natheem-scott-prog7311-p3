@@ -26,6 +26,10 @@ class CreateCategory : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_create_category)
 
+        //--------------------------------------------
+        // Burger menu setup
+        //--------------------------------------------
+
         val drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         val navView = findViewById<NavigationView>(R.id.nav_view)

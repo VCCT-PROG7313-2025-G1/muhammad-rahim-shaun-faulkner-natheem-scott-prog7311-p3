@@ -13,6 +13,10 @@ import java.util.*
 
 class AddGoalActivity : AppCompatActivity() {
 
+    //--------------------------------------------
+    // Private variables and values
+    //--------------------------------------------
+
     private lateinit var etMinGoal: TextInputEditText
     private lateinit var etMaxGoal: TextInputEditText
     private lateinit var btnSaveGoal: Button
@@ -24,6 +28,10 @@ class AddGoalActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_goal)
 
+        //--------------------------------------------
+        // UI binds and onclick listener
+        //--------------------------------------------
+
         etMinGoal = findViewById(R.id.etMinGoal)
         etMaxGoal = findViewById(R.id.etMaxGoal)
         btnSaveGoal = findViewById(R.id.btnSaveGoal)
@@ -32,6 +40,10 @@ class AddGoalActivity : AppCompatActivity() {
             saveGoalToFirestore()
         }
     }
+
+    //--------------------------------------------
+    // Function to save goals to firebase collection
+    //--------------------------------------------
 
     private fun saveGoalToFirestore() {
         val userId = auth.currentUser?.uid

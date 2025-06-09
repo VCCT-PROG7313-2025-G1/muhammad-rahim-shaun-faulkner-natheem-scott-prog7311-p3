@@ -8,10 +8,20 @@
     android:background="@drawable/gradient_background"
     tools:context=".IndividualTransactions">
 
-    <FrameLayout
+    <LinearLayout
         android:id="@+id/main_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#4B3F72"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
+
     <!-- Main Content Area -->
     <RelativeLayout
         android:id="@+id/mainLayout"
@@ -28,6 +38,7 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentStart="true" />
 
+
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -38,18 +49,6 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="16dp">
-
-                <!-- Header -->
-                <TextView
-                    android:id="@+id/tvTransactionTitle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Transaction Details"
-                    android:textColor="#FFFFFF"
-                    android:textSize="24sp"
-                    android:textStyle="bold"
-                    android:gravity="center"
-                    android:layout_marginBottom="24dp" />
 
                 <!-- Transaction Type -->
                 <LinearLayout
@@ -361,17 +360,9 @@
             </LinearLayout>
         </ScrollView>
     </RelativeLayout>
-    </FrameLayout>
+    </LinearLayout>
 
     <!-- Navigation Drawer -->
-    <com.google.android.material.navigation.NavigationView
-        android:id="@+id/navigation_view"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:background="#3D2A63"
-        android:fitsSystemWindows="true"
-        app:headerLayout="@layout/nav_header"
-        app:menu="@menu/nav_menu" />
+    <include layout="@layout/nav_drawer_menu" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

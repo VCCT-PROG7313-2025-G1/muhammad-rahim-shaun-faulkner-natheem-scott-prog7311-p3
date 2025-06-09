@@ -17,11 +17,19 @@ class UserCategoryAdapter(
         val deleteButton: ImageView = view.findViewById(R.id.ivDelete)
     }
 
+    //--------------------------------------------
+    // Layout inflater function
+    //--------------------------------------------
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_user_category, parent, false)
         return CategoryViewHolder(view)
     }
+
+    //--------------------------------------------
+    // Bind data to view
+    //--------------------------------------------
 
     override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) {
         val category = categories[position]
@@ -32,7 +40,15 @@ class UserCategoryAdapter(
         }
     }
 
+    //--------------------------------------------
+    // get category item count
+    //--------------------------------------------
+
     override fun getItemCount(): Int = categories.size
+
+    //--------------------------------------------
+    // Update data in view
+    //--------------------------------------------
 
     fun updateData(newCategories: List<UserCategoryData>) {
         categories = newCategories

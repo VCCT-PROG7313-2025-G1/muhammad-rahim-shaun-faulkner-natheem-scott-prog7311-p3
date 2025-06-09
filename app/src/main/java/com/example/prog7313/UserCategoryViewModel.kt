@@ -8,11 +8,19 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 class UserCategoryViewModel : ViewModel() {
 
+    //--------------------------------------------
+    // Private val and firebase initialization
+    //--------------------------------------------
+
     private val _categories = MutableLiveData<List<UserCategoryData>>()
     val categories: LiveData<List<UserCategoryData>> get() = _categories
 
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
+
+    //--------------------------------------------
+    // Loads all categories function
+    //--------------------------------------------
 
     fun loadAllCategories() {
         val userId = auth.currentUser?.uid ?: return
@@ -35,6 +43,10 @@ class UserCategoryViewModel : ViewModel() {
                 _categories.value = emptyList()
             }
     }
+
+    //--------------------------------------------
+    // load category function
+    //--------------------------------------------
 
     fun loadCategories(transactionType: String?) {
         val userId = auth.currentUser?.uid ?: return

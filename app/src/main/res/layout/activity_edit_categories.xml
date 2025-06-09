@@ -7,10 +7,18 @@
     android:layout_height="match_parent"
     android:background="@drawable/gradient_background">
 
-    <!-- Background Layer: Gradient + Decorative Image -->
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#4B3F72"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
         <!-- Decorative Faded Circles -->
         <ImageView
@@ -30,17 +38,6 @@
             android:padding="16dp"
             tools:context=".EditCategories">
 
-            <!-- Title -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:paddingBottom="16dp"
-                android:text="Edit Categories"
-                android:textColor="#FFFFFF"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-
             <!-- Category List -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvUserCategories"
@@ -51,18 +48,9 @@
                 android:paddingTop="8dp"
                 android:scrollbars="vertical" />
         </LinearLayout>
-    </FrameLayout>
+    </LinearLayout>
 
     <!-- Navigation Drawer -->
-    <com.google.android.material.navigation.NavigationView
-        android:id="@+id/navigationView"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:background="#2B2A3C"
-        app:headerLayout="@layout/nav_header"
-        app:menu="@menu/nav_menu"
-        app:itemTextColor="#FFFFFF"
-        app:itemIconTint="#FFFFFF" />
+    <include layout="@layout/nav_drawer_menu" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

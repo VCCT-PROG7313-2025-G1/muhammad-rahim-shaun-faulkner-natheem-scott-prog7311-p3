@@ -46,6 +46,18 @@ class HomepageActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_homepage)
 
+        progressBar = findViewById(R.id.progressBar)
+
+        //--------------------------------------------
+        // Initialized HomePageViewModel
+        //--------------------------------------------
+
+        viewModel = ViewModelProvider(this)[HomePageViewModel::class.java]
+
+        //--------------------------------------------
+        // Drawer burger menu setup
+        //--------------------------------------------
+
         val drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         val navView = findViewById<NavigationView>(R.id.nav_view)
@@ -55,8 +67,22 @@ class HomepageActivity : AppCompatActivity() {
 
         DrawerHelper.setupDrawer(this, drawerLayout, toolbar, navView)
 
+        //--------------------------------------------
+        // Set min and max goals and update
+        //--------------------------------------------
+
         tvMinGoal = findViewById(R.id.tvMinGoal)
         tvMaxGoal = findViewById(R.id.tvMaxGoal)
+
+        viewModel.setMinGoal(minGoalValue)
+        viewModel.setMaxGoal(maxGoalValue)
+
+        progressBar.progress = viewModel.getCurrentProgressPercent()
+        updateProgressAndGoalLines(progressBar.progress)
+
+        //--------------------------------------------
+        // Set goal button with click listener
+        //--------------------------------------------
 
         val btnSetGoal = findViewById<Button>(R.id.btnSetGoal)
 
@@ -65,18 +91,16 @@ class HomepageActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        //--------------------------------------------
+        // Add transaction button with click listener
+        //--------------------------------------------
+
         val btnAddTransaction = findViewById<Button>(R.id.btnAddTransaction)
 
         btnAddTransaction.setOnClickListener {
             val intent = Intent(this, Transactions::class.java)
             startActivity(intent)
         }
-
-        //--------------------------------------------
-        // Initialized HomePageViewModel
-        //--------------------------------------------
-
-        viewModel = ViewModelProvider(this)[HomePageViewModel::class.java]
 
         //--------------------------------------------
         // Display and update balance
@@ -113,10 +137,8 @@ class HomepageActivity : AppCompatActivity() {
         }
 
         //--------------------------------------------
-        // Setup goal inputs and progress bar
+        // Load current month goals
         //--------------------------------------------
-
-        progressBar = findViewById(R.id.progressBar)
 
         loadCurrentMonthGoals()
 
@@ -189,6 +211,10 @@ class HomepageActivity : AppCompatActivity() {
             }
     }
 
+    //--------------------------------------------
+    // Loading of current months goals function
+    //--------------------------------------------
+
     private fun loadCurrentMonthGoals() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
         val db = FirebaseFirestore.getInstance()
@@ -215,7 +241,10 @@ class HomepageActivity : AppCompatActivity() {
                     viewModel.setMinGoal(minGoalValue)
                     viewModel.setMaxGoal(maxGoalValue)
 
+                    updateProgressAndGoalLines(0)
+
                     val progressPercent = progressBar.progress
+
                     updateProgressAndGoalLines(progressPercent)
 
                 } else {

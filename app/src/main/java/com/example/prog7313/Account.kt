@@ -24,6 +24,10 @@ class Account : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_account)
 
+        //--------------------------------------------
+        // drawer layout setup for burger menu
+        //--------------------------------------------
+
         val drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         val navView = findViewById<NavigationView>(R.id.nav_view)
@@ -32,6 +36,10 @@ class Account : AppCompatActivity() {
         supportActionBar?.title = "My Profile"
 
         DrawerHelper.setupDrawer(this, drawerLayout, toolbar, navView)
+
+        //--------------------------------------------
+        // UI bindings and on click listeners
+        //--------------------------------------------
 
         val btnAddAccount = findViewById<ImageView>(R.id.iv_addAccount)
         val btnCreateCategory = findViewById<ImageView>(R.id.iv_createCategory)
@@ -52,12 +60,20 @@ class Account : AppCompatActivity() {
             insets
         }
 
+        //--------------------------------------------
+        // Firebase initialization
+        //--------------------------------------------
+
         val auth = FirebaseAuth.getInstance()
         val firestore = FirebaseFirestore.getInstance()
         val currentUser = auth.currentUser
 
         val tvUsername = findViewById<TextView>(R.id.tvUsername)
         val tvFullName = findViewById<TextView>(R.id.tvFullName)
+
+        //--------------------------------------------
+        // Checks if user is logged in
+        //--------------------------------------------
 
         currentUser?.uid?.let { uid ->
             val userDocRef = firestore.collection("users").document(uid)
@@ -81,6 +97,10 @@ class Account : AppCompatActivity() {
             }
         }
     }
+
+    //--------------------------------------------
+    // Function to load user bank accounts
+    //--------------------------------------------
 
     private fun loadUserAccounts(userId: String) {
         val firestore = FirebaseFirestore.getInstance()
@@ -113,6 +133,10 @@ class Account : AppCompatActivity() {
                 }
             }
     }
+
+    //--------------------------------------------
+    // Function to load users latest transactions
+    //--------------------------------------------
 
     private fun loadLatestTransactions(userId: String) {
         val firestore = FirebaseFirestore.getInstance()

@@ -6,6 +6,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import android.graphics.Color
+import android.os.Environment
 import android.widget.Button
 import androidx.drawerlayout.widget.DrawerLayout
 import com.github.mikephil.charting.charts.BarChart
@@ -36,6 +37,10 @@ class Analytics : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_analytics)
 
+        //--------------------------------------------
+        // Burger menu setup
+        //--------------------------------------------
+
         val drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         val navView = findViewById<NavigationView>(R.id.nav_view)
@@ -44,6 +49,10 @@ class Analytics : AppCompatActivity() {
         supportActionBar?.title = "Analytics"
 
         DrawerHelper.setupDrawer(this, drawerLayout, toolbar, navView)
+
+        //--------------------------------------------
+        // UI binds and data load function call
+        //--------------------------------------------
 
         pieChart = findViewById(R.id.pieChart)
         barChart = findViewById(R.id.barChart)
@@ -56,6 +65,11 @@ class Analytics : AppCompatActivity() {
         }
 
     }
+
+    //--------------------------------------------
+    // Function to load pie chart data
+    // https://malcolmmaima.medium.com/kotlin-implementing-a-barchart-and-piechart-using-mpandroidchart-8c7643c4ba75
+    //--------------------------------------------
 
     private fun loadPieChartData() {
         val db = FirebaseFirestore.getInstance()
@@ -97,6 +111,11 @@ class Analytics : AppCompatActivity() {
             }
     }
 
+    //--------------------------------------------
+    // Function to set pie chart data based on firebase data
+    // https://malcolmmaima.medium.com/kotlin-implementing-a-barchart-and-piechart-using-mpandroidchart-8c7643c4ba75
+    //--------------------------------------------
+
     private fun setPieChartData(categoryTotals: Map<String, Float>) {
         val entries = categoryTotals.map { (category, total) ->
             PieEntry(total, category)
@@ -117,15 +136,30 @@ class Analytics : AppCompatActivity() {
             colors = softColors
             valueTextColor = Color.WHITE
             valueTextSize = 10f
+
+            setXValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE)
+            setYValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE)
+
+            valueLinePart1Length = 1.0f
+            valueLinePart2Length = 0.8f
+            valueLineColor = Color.WHITE
+            valueLineWidth = 1.2f
+            valueLinePart1OffsetPercentage = 90f
+            sliceSpace = 2f
+
         }
 
-        val pieData = PieData(dataSet)
+        val pieData = PieData(dataSet).apply {
+            setValueFormatter(com.github.mikephil.charting.formatter.PercentFormatter(pieChart))
+        }
 
         pieChart.apply {
             data = pieData
             description.isEnabled = false
             centerText = "Categories"
             setCenterTextSize(14f)
+            setExtraOffsets(15f, 15f, 15f, 15f)
+            setEntryLabelTextSize(10f)
             setUsePercentValues(true)
             setEntryLabelColor(Color.WHITE)
             legend.textColor = Color.WHITE
@@ -133,6 +167,11 @@ class Analytics : AppCompatActivity() {
             invalidate()
         }
     }
+
+    //--------------------------------------------
+    // Function to load bar chart data
+    // https://malcolmmaima.medium.com/kotlin-implementing-a-barchart-and-piechart-using-mpandroidchart-8c7643c4ba75
+    //--------------------------------------------
 
     private fun loadBarChartData() {
         val db = FirebaseFirestore.getInstance()
@@ -216,6 +255,11 @@ class Analytics : AppCompatActivity() {
             }
     }
 
+    //--------------------------------------------
+    // Function to set bar chart data based on firebase data
+    // https://malcolmmaima.medium.com/kotlin-implementing-a-barchart-and-piechart-using-mpandroidchart-8c7643c4ba75
+    //--------------------------------------------
+
     private fun setBarChartData(income: Float, expense: Float, balance: Float, minGoal: Float, maxGoal: Float) {
         val entries = arrayListOf(
             BarEntry(0f, balance),
@@ -262,6 +306,11 @@ class Analytics : AppCompatActivity() {
         barChart.invalidate()
     }
 
+    //--------------------------------------------
+    // Function to export analytical data to CSV in downloads dir on phone
+    // https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.io/write-text.html
+    //--------------------------------------------
+
     private fun exportMonthlyTransactionsToCSV() {
         val db = FirebaseFirestore.getInstance()
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
@@ -303,7 +352,8 @@ class Analytics : AppCompatActivity() {
 
                 try {
                     val fileName = "monthly_transactions_${System.currentTimeMillis()}.csv"
-                    val file = File(getExternalFilesDir(null), fileName)
+                    val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                    val file = File(downloadsDir, fileName)
                     file.writeText(fullCSV)
 
                     Toast.makeText(this, "Exported to ${file.absolutePath}", Toast.LENGTH_LONG).show()

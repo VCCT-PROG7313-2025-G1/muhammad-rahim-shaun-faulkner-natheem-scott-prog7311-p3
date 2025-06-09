@@ -14,6 +14,10 @@ class AccountListAdapter (
     private val onDeleteClick: (AccountData) -> Unit
     ) : RecyclerView.Adapter<AccountListAdapter.AccountViewHolder>() {
 
+    //--------------------------------------------
+    // Inner class UI binds
+    //--------------------------------------------
+
         inner class AccountViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             val bankName: TextView = itemView.findViewById(R.id.tvBankName)
             val accountType: TextView = itemView.findViewById(R.id.tvAccountType)
@@ -22,10 +26,18 @@ class AccountListAdapter (
             val deleteButton: Button = itemView.findViewById(R.id.btnDelete)
         }
 
+    //--------------------------------------------
+    // Layout inflater
+    //--------------------------------------------
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AccountViewHolder {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.item_account, parent, false)
             return AccountViewHolder(view)
         }
+
+    //--------------------------------------------
+    // Binds data to layout
+    //--------------------------------------------
 
         override fun onBindViewHolder(holder: AccountViewHolder, position: Int) {
             val account = accounts[position]

@@ -49,6 +49,10 @@ class UploadPhoto : AppCompatActivity() {
         buttonTakePhoto = findViewById(R.id.btnTakePhoto)
         buttonConfirmPhoto = findViewById(R.id.btnConfirmPhoto)
 
+        //--------------------------------------------
+        // Firebase blob storage reference
+        //--------------------------------------------
+
         storageReference = FirebaseStorage.getInstance().reference.child("transaction_images")
 
         buttonSelectPhoto.setOnClickListener {
@@ -99,6 +103,10 @@ class UploadPhoto : AppCompatActivity() {
         }
     }
 
+    //--------------------------------------------
+    // Function to cache image
+    //--------------------------------------------
+
     private fun saveBitmapToCache(bitmap: Bitmap): Uri {
         val file = File(cacheDir, "temp_photo.jpg")
         file.outputStream().use {
@@ -106,6 +114,10 @@ class UploadPhoto : AppCompatActivity() {
         }
         return FileProvider.getUriForFile(this, "$packageName.fileprovider", file)
     }
+
+    //--------------------------------------------
+    // Image upload to firebase function
+    //--------------------------------------------
 
     private fun uploadImageToFirebase(imageUri: Uri) {
         val fileName = "IMG_${System.currentTimeMillis()}.jpg"

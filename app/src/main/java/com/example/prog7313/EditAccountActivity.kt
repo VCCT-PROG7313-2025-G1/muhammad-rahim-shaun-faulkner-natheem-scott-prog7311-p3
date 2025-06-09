@@ -8,6 +8,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 class EditAccountActivity : AppCompatActivity() {
 
+    //--------------------------------------------
+    // Private variables
+    //--------------------------------------------
+
     private lateinit var bankNameEditText: EditText
     private lateinit var accountTypeAutoComplete: AutoCompleteTextView
     private lateinit var balanceEditText: EditText
@@ -22,17 +26,33 @@ class EditAccountActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_bank_account)
 
+        //--------------------------------------------
+        // Firebase initialization
+        //--------------------------------------------
+
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
+
+        //--------------------------------------------
+        // UI binds
+        //--------------------------------------------
 
         bankNameEditText = findViewById(R.id.etBankName)
         accountTypeAutoComplete = findViewById(R.id.actvAccountType)
         balanceEditText = findViewById(R.id.etBalance)
         updateButton = findViewById(R.id.btnUpdateAccount)
 
+        //--------------------------------------------
+        // Account type list for selection
+        //--------------------------------------------
+
         val accountTypes = listOf("Cheque", "Savings", "Credit Card")
         val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, accountTypes)
         accountTypeAutoComplete.setAdapter(adapter)
+
+        //--------------------------------------------
+        // Prefills data from collection
+        //--------------------------------------------
 
         accountId = intent.getStringExtra("accountId")
         val bankName = intent.getStringExtra("bankName") ?: ""
@@ -42,6 +62,10 @@ class EditAccountActivity : AppCompatActivity() {
         bankNameEditText.setText(bankName)
         accountTypeAutoComplete.setText(accountType, false)
         balanceEditText.setText(balance.toString())
+
+        //--------------------------------------------
+        // Listener to update account information
+        //--------------------------------------------
 
         updateButton.setOnClickListener {
             val updatedBankName = bankNameEditText.text.toString().trim()

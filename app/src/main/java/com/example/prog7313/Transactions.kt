@@ -124,11 +124,23 @@ class Transactions : AppCompatActivity() {
         val tvRecurring = findViewById<TextView>(R.id.tvRecurring)
         spinnerAccounts = findViewById(R.id.spinnerAccounts)
 
+        //--------------------------------------------
+        // Firebase initialization
+        //--------------------------------------------
+
         val firestore = FirebaseFirestore.getInstance()
         val auth = FirebaseAuth.getInstance()
         val currentUser = auth.currentUser
 
+        //--------------------------------------------
+        // Initialize firestore repo file
+        //--------------------------------------------
+
         firestoreRepo = FirestoreRepo()
+
+        //--------------------------------------------
+        // User logged in check
+        //--------------------------------------------
 
         if (currentUser == null) {
             Toast.makeText(this, "User not logged in!", Toast.LENGTH_SHORT).show()
@@ -210,7 +222,7 @@ class Transactions : AppCompatActivity() {
         }
 
         //--------------------------------------------
-        // Submit click listener
+        // Submit click listener to add transaction to firebase
         //--------------------------------------------
 
         buttonSubmit.setOnClickListener {

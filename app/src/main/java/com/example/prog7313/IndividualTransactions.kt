@@ -15,7 +15,10 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.drawerlayout.widget.DrawerLayout
 import com.bumptech.glide.Glide
+import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.io.File
@@ -35,6 +38,19 @@ class IndividualTransactions : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_individual_transactions)
+
+        //--------------------------------------------
+        // Drawer burger menu setup
+        //--------------------------------------------
+
+        val drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        val navView = findViewById<NavigationView>(R.id.nav_view)
+
+        setSupportActionBar(toolbar)
+        supportActionBar?.title = "Transaction Details"
+
+        DrawerHelper.setupDrawer(this, drawerLayout, toolbar, navView)
 
         //--------------------------------------------
         // Transaction logic based on transaction ID
@@ -129,7 +145,10 @@ class IndividualTransactions : AppCompatActivity() {
             findViewById<TextView>(R.id.tvImageStatus).text = "No image attached"
         }
 
-        // Load account name based on accountId
+        //--------------------------------------------
+        // load account name based on account ID
+        //--------------------------------------------
+
         val accountTextView = findViewById<TextView>(R.id.tvAccountId)
 
         if (!data.accountId.isNullOrEmpty()) {
@@ -151,6 +170,10 @@ class IndividualTransactions : AppCompatActivity() {
         }
     }
 
+    //--------------------------------------------
+    // delete transaction function
+    //--------------------------------------------
+
     private fun deleteTransaction() {
         db.collection("users")
             .document(currentUserId)
@@ -168,6 +191,10 @@ class IndividualTransactions : AppCompatActivity() {
             }
     }
 
+    //--------------------------------------------
+    // Image pop up function to preview image
+    //--------------------------------------------
+
     private fun showImagePopup(imageUrl: String) {
         val dialog = Dialog(this)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -182,6 +209,10 @@ class IndividualTransactions : AppCompatActivity() {
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog.show()
     }
+
+    //--------------------------------------------
+    // Timestamp formatter function
+    //--------------------------------------------
 
     private fun formatTimestamp(timestamp: Long): String {
         val sdf = java.text.SimpleDateFormat("dd MMM yyyy", java.util.Locale.getDefault())

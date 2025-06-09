@@ -33,6 +33,10 @@ class Timeline : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_timeline)
 
+        //--------------------------------------------
+        // Burger menu setup
+        //--------------------------------------------
+
         val drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         val navView = findViewById<NavigationView>(R.id.nav_view)
@@ -73,10 +77,13 @@ class Timeline : AppCompatActivity() {
         loadTransactionsForDate(today)
     }
 
+    //--------------------------------------------
+    // Load transaction function based on date
+    //--------------------------------------------
+
     private fun loadTransactionsForDate(dateMillis: Long) {
         if (currentUserId.isEmpty()) return
 
-        // Load only transactions on that specific day
         val startOfDay = dateMillis
         val endOfDay = dateMillis + 24 * 60 * 60 * 1000
 

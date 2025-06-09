@@ -8,6 +8,10 @@ class FirestoreRepo {
 
     private val firestore = FirebaseFirestore.getInstance()
 
+    //--------------------------------------------
+    // Add transaction function
+    //--------------------------------------------
+
     fun addTransaction(
         userId: String,
         transaction: TransactionData,
@@ -54,6 +58,10 @@ class FirestoreRepo {
             onFailure(e)
         }
     }
+
+    //--------------------------------------------
+    // Redundant function to fetch transaction information
+    //--------------------------------------------
 
     fun getTransactionsForAccount(
         userId: String,

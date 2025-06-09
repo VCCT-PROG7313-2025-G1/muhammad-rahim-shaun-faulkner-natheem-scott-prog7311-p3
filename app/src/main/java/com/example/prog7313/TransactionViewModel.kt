@@ -13,11 +13,19 @@ data class CategoryTotal(
 
 class TransactionViewModel : ViewModel() {
 
+    //--------------------------------------------
+    // Private val setup
+    //--------------------------------------------
+
     private val db = FirebaseFirestore.getInstance()
     private val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
     private val _categoryTotals = MutableLiveData<List<CategoryTotal>>()
     val categoryTotals: LiveData<List<CategoryTotal>> = _categoryTotals
+
+    //--------------------------------------------
+    // Function to load totals spent by category
+    //--------------------------------------------
 
     fun loadTotalSpentByCategory() {
         db.collection("users")

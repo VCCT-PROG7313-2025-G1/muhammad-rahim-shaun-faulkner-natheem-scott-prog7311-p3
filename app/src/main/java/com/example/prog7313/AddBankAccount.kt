@@ -8,6 +8,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 class AddBankAccount : AppCompatActivity() {
 
+    //--------------------------------------------
+    // Private variables
+    //--------------------------------------------
+
     private lateinit var bankNameEditText: EditText
     private lateinit var accountTypeAutoComplete: AutoCompleteTextView
     private lateinit var submitButton: Button
@@ -19,16 +23,32 @@ class AddBankAccount : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_bank_account)
 
+        //--------------------------------------------
+        // Firebase initialization
+        //--------------------------------------------
+
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
+
+        //--------------------------------------------
+        // UI binds
+        //--------------------------------------------
 
         bankNameEditText = findViewById(R.id.etBankName)
         accountTypeAutoComplete = findViewById(R.id.actvAccountType)
         submitButton = findViewById(R.id.btnSubmitAccount)
 
+        //--------------------------------------------
+        // Sets list for account type selection
+        //--------------------------------------------
+
         val accountTypes = listOf("Cheque", "Savings", "Credit Card")
         val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, accountTypes)
         accountTypeAutoComplete.setAdapter(adapter)
+
+        //--------------------------------------------
+        // On submit listener to create a bank account for user
+        //--------------------------------------------
 
         submitButton.setOnClickListener {
             val bankName = bankNameEditText.text.toString().trim()

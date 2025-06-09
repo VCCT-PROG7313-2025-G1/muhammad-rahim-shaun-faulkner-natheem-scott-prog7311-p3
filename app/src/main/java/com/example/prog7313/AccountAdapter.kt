@@ -15,11 +15,19 @@ class AccountAdapter(private val accounts: List<AccountData>) :
         val balance: TextView = itemView.findViewById(R.id.text_account_balance)
     }
 
+    //--------------------------------------------
+    // Layout inflater function
+    //--------------------------------------------
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AccountViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_account_card_home, parent, false)
         return AccountViewHolder(view)
     }
+
+    //--------------------------------------------
+    // Binds data to view
+    //--------------------------------------------
 
     override fun onBindViewHolder(holder: AccountViewHolder, position: Int) {
         val accountData = accounts[position]

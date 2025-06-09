@@ -50,22 +50,6 @@
                         android:orientation="vertical"
                         android:padding="12dp">
 
-                        <TextView
-                            android:id="@+id/barChartTitleTV"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text=""
-                            android:textColor="#FFFFFF"
-                            android:textSize="20sp" />
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text=""
-                            android:textColor="#D3D3D3"
-                            android:textSize="15sp"
-                            android:layout_marginBottom="10dp" />
-
                         <com.github.mikephil.charting.charts.PieChart
                             android:id="@+id/pieChart"
                             android:layout_width="match_parent"
@@ -92,22 +76,6 @@
                         android:layout_height="match_parent"
                         android:orientation="vertical"
                         android:padding="12dp">
-
-                        <TextView
-                            android:id="@+id/warehouseStatisticsTitleTV"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text=""
-                            android:textColor="#FFFFFF"
-                            android:textSize="20sp" />
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text=""
-                            android:textColor="#D3D3D3"
-                            android:textSize="15sp"
-                            android:layout_marginBottom="10dp" />
 
                         <com.github.mikephil.charting.charts.BarChart
                             android:id="@+id/barChart"

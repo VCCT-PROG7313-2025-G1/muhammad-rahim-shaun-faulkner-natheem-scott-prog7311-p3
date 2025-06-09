@@ -1,5 +1,9 @@
 package com.example.prog7313
 
+//--------------------------------------------
+// Data class for accounts
+//--------------------------------------------
+
 data class AccountData(
     val id: String = "",
     val bankName: String = "",

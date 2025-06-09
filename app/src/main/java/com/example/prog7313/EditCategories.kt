@@ -3,9 +3,12 @@ package com.example.prog7313
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -26,6 +29,19 @@ class EditCategories : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_edit_categories)
+
+        //--------------------------------------------
+        // Burger menu logic
+        //--------------------------------------------
+
+        val drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        val navView = findViewById<NavigationView>(R.id.nav_view)
+
+        setSupportActionBar(toolbar)
+        supportActionBar?.title = "Custom Categories"
+
+        DrawerHelper.setupDrawer(this, drawerLayout, toolbar, navView)
 
         //--------------------------------------------
         // Initialized recycler view and adapter

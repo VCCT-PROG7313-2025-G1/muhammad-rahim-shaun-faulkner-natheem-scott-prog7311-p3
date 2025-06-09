@@ -11,6 +11,10 @@ import com.google.firebase.auth.FirebaseAuth
 
 object DrawerHelper {
 
+    //--------------------------------------------
+    // Logic to open and close drawer menu
+    //--------------------------------------------
+
     fun setupDrawer(activity: Activity, drawerLayout: DrawerLayout, toolbar: Toolbar, navView: NavigationView) {
         val toggle = ActionBarDrawerToggle(
             activity, drawerLayout, toolbar,
@@ -21,8 +25,9 @@ object DrawerHelper {
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
-        //val user = FirebaseAuth.getInstance().currentUser
-        //usernameText.text = user?.displayName ?: "Guest"
+        //--------------------------------------------
+        // Navigation logic for drawer menu items
+        //--------------------------------------------
 
         navView.setNavigationItemSelectedListener {
             when (it.itemId) {

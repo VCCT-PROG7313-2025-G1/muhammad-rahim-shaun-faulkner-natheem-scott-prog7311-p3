@@ -15,6 +15,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 class AccountListActivity : AppCompatActivity() {
 
+    //--------------------------------------------
+    // Private variables and values
+    //--------------------------------------------
+
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: AccountListAdapter
     private val db = FirebaseFirestore.getInstance()
@@ -25,6 +29,10 @@ class AccountListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_account_list)
 
+        //--------------------------------------------
+        // Burger menu functions
+        //--------------------------------------------
+
         val drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         val navView = findViewById<NavigationView>(R.id.nav_view)
@@ -33,6 +41,10 @@ class AccountListActivity : AppCompatActivity() {
         supportActionBar?.title = "My Accounts"
 
         DrawerHelper.setupDrawer(this, drawerLayout, toolbar, navView)
+
+        //--------------------------------------------
+        // Recycler view call to load layout
+        //--------------------------------------------
 
         recyclerView = findViewById(R.id.recyclerViewAccounts)
 
@@ -46,6 +58,10 @@ class AccountListActivity : AppCompatActivity() {
 
         loadAccountsFromFirestore()
     }
+
+    //--------------------------------------------
+    // Loads user bank accounts from firebase
+    //--------------------------------------------
 
     private fun loadAccountsFromFirestore() {
         val userId = auth.currentUser?.uid ?: return
@@ -71,11 +87,19 @@ class AccountListActivity : AppCompatActivity() {
             }
     }
 
+    //--------------------------------------------
+    // Edit bank account function
+    //--------------------------------------------
+
     private fun editAccount(account: AccountData) {
         val intent = Intent(this, EditAccountActivity::class.java)
         intent.putExtra("accountId", account.id)
         startActivity(intent)
     }
+
+    //--------------------------------------------
+    // Delete confirm call
+    //--------------------------------------------
 
     private fun confirmDelete(account: AccountData) {
         AlertDialog.Builder(this)
@@ -85,6 +109,10 @@ class AccountListActivity : AppCompatActivity() {
             .setNegativeButton("Cancel", null)
             .show()
     }
+
+    //--------------------------------------------
+    // Delete bank account from firebase function
+    //--------------------------------------------
 
     private fun deleteAccount(account: AccountData) {
         val userId = auth.currentUser?.uid ?: return
@@ -99,6 +127,10 @@ class AccountListActivity : AppCompatActivity() {
                 Toast.makeText(this, "Failed to delete", Toast.LENGTH_SHORT).show()
             }
     }
+
+    //--------------------------------------------
+    // Function for activity resume
+    //--------------------------------------------
 
     override fun onResume() {
         super.onResume()

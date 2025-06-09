@@ -34,6 +34,10 @@ class HomePageViewModel : ViewModel() {
     private var minGoal = 0.0
     private var maxGoal = 0.0
 
+    //--------------------------------------------
+    // Balance calculation function
+    //--------------------------------------------
+
     fun calculateBalance() {
         db.collection("users")
             .document(userId)
@@ -56,6 +60,10 @@ class HomePageViewModel : ViewModel() {
                 _balanceLiveData.value = income - expenses
             }
     }
+
+    //--------------------------------------------
+    // monthly expenses loading function
+    //--------------------------------------------
 
     fun loadMonthlyExpense() {
         db.collection("users")
@@ -109,21 +117,37 @@ class HomePageViewModel : ViewModel() {
         loadMonthlyExpense()
     }
 
+    //--------------------------------------------
+    // set min goal function
+    //--------------------------------------------
+
     fun setMinGoal(value: Double) {
         minGoal = value
         updateProgress()
     }
+
+    //--------------------------------------------
+    // set max goal function
+    //--------------------------------------------
 
     fun setMaxGoal(value: Double) {
         maxGoal = value
         updateProgress()
     }
 
+    //--------------------------------------------
+    // restore goal function
+    //--------------------------------------------
+
     fun restoreGoals(min: Double, max: Double) {
         minGoal = min
         maxGoal = max
         updateProgress()
     }
+
+    //--------------------------------------------
+    // function to update progress bar
+    //--------------------------------------------
 
     private fun updateProgress() {
         if (maxGoal == 0.0) {
@@ -134,6 +158,10 @@ class HomePageViewModel : ViewModel() {
         val percent = ((monthlyExpense / maxGoal) * 100).coerceIn(0.0, 100.0)
         _progressPercent.value = percent.toInt()
     }
+
+    //--------------------------------------------
+    // Load user bank accounts function
+    //--------------------------------------------
 
     fun loadAccounts() {
         db.collection("users")
@@ -152,5 +180,14 @@ class HomePageViewModel : ViewModel() {
                 }
                 _accountList.value = accounts
             }
+    }
+
+    //--------------------------------------------
+    // get function for current progress bar percentage
+    //--------------------------------------------
+
+    fun getCurrentProgressPercent(): Int {
+        if (maxGoal == 0.0) return 0
+        return ((monthlyExpense / maxGoal) * 100).coerceIn(0.0, 100.0).toInt()
     }
 }

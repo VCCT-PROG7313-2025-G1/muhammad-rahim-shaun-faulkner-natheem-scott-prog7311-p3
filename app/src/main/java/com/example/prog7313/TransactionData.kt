@@ -2,6 +2,10 @@ package com.example.prog7313
 
 import com.google.firebase.firestore.Exclude
 
+//--------------------------------------------
+// Transaction data class
+//--------------------------------------------
+
 data class TransactionData(
     @get:Exclude @set:Exclude
     var id: String = "",
