@@ -61,11 +61,11 @@ Make sure your that your local local.properties file includes the correct Androi
 ________________________________________
 # GitHub Repository
 Access the full source code of the entire project below:
-👉 []
+👉 [https://github.com/hdimp/muhammad-rahim-shaun-faulkner-natheem-scott-prog7311-p3]
 ________________________________________
 # YouTube Demo
 Watch the demo showcasing that the android application runs on a mobile device and shows all the features that are required for POE Part 3 here:
-🎬 []
+🎬 [https://www.youtube.com/watch?v=fwoqncPoy7Y]
 ________________________________________
 # WinRAR or Windows Zip
 1.	Please use WinRAR or Windows Zip
